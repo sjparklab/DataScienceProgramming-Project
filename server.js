@@ -26,7 +26,6 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
 
-  // min-max 정규화
   const minMaxValues = columns.reduce((acc, column) => {
     const values = geojsonData.features.map(f => parseFloat(f.properties[column].replace(/,/g, '')) || 0);
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
@@ -38,7 +37,6 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     return (value - min) / (max - min);
   };
 
-  // 가중치를 적용하여 계산
   geojsonData.features = geojsonData.features.map(feature => {
     const normalizedValues = columns.map(column => normalize(parseFloat(feature.properties[column].replace(/,/g, '')) || 0, column));
     const computedValue = 
