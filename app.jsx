@@ -32,11 +32,13 @@ function Root() {
     const fetchGeoJson = async () => {
       try {
         const response = await fetch('/geojson');
-        console.log('Response:', response);  // 응답 로그 출력
+        console.log('Response:', response);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-        const data = await response.json();
+        const text = await response.text(); // 응답을 텍스트로 읽음
+        console.log('응답 텍스트:', text); // 응답 내용을 콘솔에 출력
+        const data = JSON.parse(text); // JSON 파싱
         setGeoJsonData(data);
       } catch (error) {
         console.error('GeoJSON 데이터 가져오기 오류:', error);

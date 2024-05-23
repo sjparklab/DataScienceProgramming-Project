@@ -55,17 +55,28 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 };
 
 app.get('/geojson', (req, res) => {
+  console.log('GET /geojson 요청 수신');
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err);
       res.status(500).send('GeoJSON 파일 읽기 오류');
       return;
     }
 
-    let geojsonData = JSON.parse(data);
+    let geojsonData;
+    try {
+      geojsonData = JSON.parse(data);
+    } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError);
+      res.status(500).send('GeoJSON 파싱 오류');
+      return;
+    }
+    
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+    console.log('응답 데이터:', geojsonData);
 
     res.json(geojsonData);
   });
