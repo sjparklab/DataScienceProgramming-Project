@@ -8,7 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
 
 const INITIAL_VIEW_STATE = {
-  latitude: 35.9078, // 대한민국 중심부
+  latitude: 35.9078,
   longitude: 127.7669,
   zoom: 7,
   bearing: 0,
@@ -31,7 +31,7 @@ function Root() {
   useEffect(() => {
     const fetchGeoJson = async () => {
       try {
-        const response = await fetch('http://localhost:3001/geojson');
+        const response = await fetch('/geojson');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -46,7 +46,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('http://localhost:3001/update-geojson', {
+      const response = await fetch('/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights, statuses })
@@ -72,11 +72,11 @@ function Root() {
     extruded: true,
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
-      const color = Math.min(255, value * 1.5); // 예시 색상 계산 (100을 곱한 후 적절한 범위로 맞추기 위해 1.5를 곱함)
-      return [color, 140, 200, 180]; // RGBA
+      const color = Math.min(255, value * 1.5);
+      return [color, 140, 200, 180];
     },
     getLineColor: [255, 255, 255],
-    getElevation: d => (d.properties.computedValue || 0) * 2, // 높이 값 조정
+    getElevation: d => (d.properties.computedValue || 0) * 2,
     pickable: true,
     visible: true,
     onHover: info => {

@@ -4,47 +4,26 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-app.use(cors());
-app.use(express.json()); // JSON 바디를 파싱하는 미들웨어 추가
+const allowedOrigins = ['http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
+app.use(express.json());
 
 const geojsonPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
 
-// 초기 GeoJSON 데이터를 가져오는 함수
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
-  const columns = [
-    '2023년_계_총세대수', 'count_transport', 'sum_all_shop', 
-    'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
-  ];
-
-  // min-max 정규화
-  const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => parseFloat(f.properties[column].replace(/,/g, '')) || 0);
-    acc[column] = { min: Math.min(...values), max: Math.max(...values) };
-    return acc;
-  }, {});
-
-  const normalize = (value, column) => {
-    const { min, max } = minMaxValues[column];
-    return (value - min) / (max - min);
-  };
-
-  // 가중치를 적용하여 계산
-  geojsonData.features = geojsonData.features.map(feature => {
-    const normalizedValues = columns.map(column => normalize(parseFloat(feature.properties[column].replace(/,/g, '')) || 0, column));
-    const computedValue = 
-      (statuses[0] ? normalizedValues[0] * weights[0] * 100 : 0) +
-      (statuses[1] ? normalizedValues[1] * weights[1] * 100 : 0) +
-      (statuses[2] ? normalizedValues[2] * weights[2] * 100 : 0) +
-      (statuses[3] ? ((normalizedValues[3] + normalizedValues[4] + normalizedValues[5]) / 3) * weights[3] * 100 : 0);
-    
-    feature.properties.computedValue = computedValue;
-    return feature;
-  });
-
-  return geojsonData;
+  // ... 기존 코드
 };
 
-// 초기 GeoJSON 데이터를 가져오는 엔드포인트
 app.get('/geojson', (req, res) => {
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
@@ -53,8 +32,8 @@ app.get('/geojson', (req, res) => {
     }
 
     let geojsonData = JSON.parse(data);
-    const weights = [1, 1, 1, 1]; // 기본 가중치
-    const statuses = [true, true, true, true]; // 기본 상태
+    const weights = [1, 1, 1, 1];
+    const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
 
@@ -62,7 +41,6 @@ app.get('/geojson', (req, res) => {
   });
 });
 
-// 사용자 입력을 기반으로 GeoJSON 데이터를 업데이트하는 엔드포인트
 app.post('/update-geojson', (req, res) => {
   const { weights, statuses } = req.body;
 
