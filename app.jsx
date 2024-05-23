@@ -8,7 +8,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
 
 const INITIAL_VIEW_STATE = {
-  latitude: 35.9078,
+  latitude: 35.9078, // 대한민국 중심부
   longitude: 127.7669,
   zoom: 7,
   bearing: 0,
@@ -32,6 +32,7 @@ function Root() {
     const fetchGeoJson = async () => {
       try {
         const response = await fetch('/geojson');
+        console.log('Response:', response);  // 응답 로그 출력
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -72,11 +73,11 @@ function Root() {
     extruded: true,
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
-      const color = Math.min(255, value * 1.5);
-      return [color, 140, 200, 180];
+      const color = Math.min(255, value * 1.5); // 예시 색상 계산 (100을 곱한 후 적절한 범위로 맞추기 위해 1.5를 곱함)
+      return [color, 140, 200, 180]; // RGBA
     },
     getLineColor: [255, 255, 255],
-    getElevation: d => (d.properties.computedValue || 0) * 2,
+    getElevation: d => (d.properties.computedValue || 0) * 2, // 높이 값 조정
     pickable: true,
     visible: true,
     onHover: info => {

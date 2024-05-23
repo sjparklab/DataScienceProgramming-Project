@@ -21,7 +21,37 @@ app.use(express.json());
 const geojsonPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
-  // ... 기존 코드
+  const columns = [
+    '2023년_계_총세대수', 'count_transport', 'sum_all_shop', 
+    'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
+  ];
+
+  // min-max 정규화
+  const minMaxValues = columns.reduce((acc, column) => {
+    const values = geojsonData.features.map(f => parseFloat(f.properties[column].replace(/,/g, '')) || 0);
+    acc[column] = { min: Math.min(...values), max: Math.max(...values) };
+    return acc;
+  }, {});
+
+  const normalize = (value, column) => {
+    const { min, max } = minMaxValues[column];
+    return (value - min) / (max - min);
+  };
+
+  // 가중치를 적용하여 계산
+  geojsonData.features = geojsonData.features.map(feature => {
+    const normalizedValues = columns.map(column => normalize(parseFloat(feature.properties[column].replace(/,/g, '')) || 0, column));
+    const computedValue = 
+      (statuses[0] ? normalizedValues[0] * weights[0] * 100 : 0) +
+      (statuses[1] ? normalizedValues[1] * weights[1] * 100 : 0) +
+      (statuses[2] ? normalizedValues[2] * weights[2] * 100 : 0) +
+      (statuses[3] ? ((normalizedValues[3] + normalizedValues[4] + normalizedValues[5]) / 3) * weights[3] * 100 : 0);
+    
+    feature.properties.computedValue = computedValue;
+    return feature;
+  });
+
+  return geojsonData;
 };
 
 app.get('/geojson', (req, res) => {
