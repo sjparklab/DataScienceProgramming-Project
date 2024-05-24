@@ -15,7 +15,7 @@ const INITIAL_VIEW_STATE = {
   pitch: 30
 };
 
-const MAP_STYLE = 'mapbox://styles/mapbox/light-v9';
+const MAP_STYLE = 'mapbox://styles/mapbox/standard';
 
 function DeckGLOverlay(props) {
   const overlay = useControl(() => new DeckOverlay(props));
