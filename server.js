@@ -4,10 +4,11 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-const allowedOrigins = ['http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173'];
+const allowedOrigins = ['http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
+    // origin이 없는 경우 (예: 서버 간 통신)와 허용된 origin 목록에 있는 경우에만 허용
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -57,6 +58,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 app.get('/geojson', (req, res) => {
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
       res.status(500).send('GeoJSON 파일 읽기 오류');
       return;
     }
@@ -65,6 +67,7 @@ app.get('/geojson', (req, res) => {
     try {
       geojsonData = JSON.parse(data);
     } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
       res.status(500).send('GeoJSON 파싱 오류');
       return;
     }
@@ -80,8 +83,12 @@ app.get('/geojson', (req, res) => {
 app.post('/update-geojson', (req, res) => {
   const { weights, statuses } = req.body;
 
+  console.log('받은 가중치:', weights); // 디버깅 로그 추가
+  console.log('받은 상태:', statuses); // 디버깅 로그 추가
+
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
       res.status(500).send('GeoJSON 파일 읽기 오류');
       return;
     }
@@ -90,6 +97,7 @@ app.post('/update-geojson', (req, res) => {
     try {
       geojsonData = JSON.parse(data);
     } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
       res.status(500).send('GeoJSON 파싱 오류');
       return;
     }
