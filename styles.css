@@ -1,0 +1,91 @@
+/* styles.css */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* 스크롤바 제거 */
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 가운데 정렬 */
+    width: 100%;
+    height: 54px;
+    background-color: white;
+    z-index: 1000;
+    border-bottom: 1px solid #ccc; /* 상단바 경계선 */
+  }
+  
+  .side-bar {
+    width: 360px;
+    background-color: white;
+    z-index: 1000;
+    border-right: 1px solid #ccc; /* 사이드바 경계선 */
+    overflow-y: auto; /* 사이드바 내부 스크롤 */
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+  }
+  
+  .map-container {
+    flex-grow: 1;
+  }
+  
+  .control-panel {
+    padding: 10px;
+  }
+  
+  .control-box {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px; /* 박스 간의 간격 */
+  }
+  
+  .control-box label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .activation {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+  }
+  
+  .update-button {
+    width: 100%; /* 버튼 전체 너비 사용 */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .update-button:hover {
+    background-color: #0056b3;
+  }
+  
+  #tooltip {
+    position: absolute;
+    z-index: 1001; /* Ensure tooltip is above other elements */
+    pointer-events: none;
+    background: white;
+    padding: 5px;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  

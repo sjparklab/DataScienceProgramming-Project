@@ -4,22 +4,30 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-const allowedOrigins = ['http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com'];
+const allowedOrigins = ['http://localhost:5173', 'http://192.168.0.3:5173', 'http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // origin이 없는 경우 (예: 서버 간 통신)와 허용된 origin 목록에 있는 경우에만 허용
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
 
 const geojsonPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
+
+const parseValue = (value) => {
+  if (typeof value === 'string') {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  }
+  return parseFloat(value) || 0;
+};
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
@@ -27,9 +35,17 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
 
+  // 가격 관련 데이터의 합산 값을 계산하여 추가
+  geojsonData.features.forEach(feature => {
+    const priceSum = parseValue(feature.properties['montly-avg_mean']) +
+                     parseValue(feature.properties['dep-avg_rent_mean']) +
+                     parseValue(feature.properties['dep-avg_deposit_mean']);
+    feature.properties.priceSum = priceSum;
+  });
+
   // min-max 정규화
-  const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => parseFloat(f.properties[column].replace(/,/g, '')) || 0);
+  const minMaxValues = columns.concat('priceSum').reduce((acc, column) => {
+    const values = geojsonData.features.map(f => parseValue(f.properties[column]));
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
     return acc;
   }, {});
@@ -40,15 +56,31 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   };
 
   // 가중치를 적용하여 계산
-  geojsonData.features = geojsonData.features.map(feature => {
-    const normalizedValues = columns.map(column => normalize(parseFloat(feature.properties[column].replace(/,/g, '')) || 0, column));
-    const computedValue = 
-      (statuses[0] ? normalizedValues[0] * weights[0] * 100 : 0) +
-      (statuses[1] ? normalizedValues[1] * weights[1] * 100 : 0) +
-      (statuses[2] ? normalizedValues[2] * weights[2] * 100 : 0) +
-      (statuses[3] ? ((normalizedValues[3] + normalizedValues[4] + normalizedValues[5]) / 3) * weights[3] * 100 : 0);
-    
-    feature.properties.computedValue = computedValue;
+  const computedValues = geojsonData.features.map(feature => {
+    const values = columns.map(column => parseValue(feature.properties[column]));
+    const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
+
+    // 가격 합산 값 역으로 정규화
+    const priceSumNormalized = normalize(feature.properties.priceSum, 'priceSum');
+    const reversePriceSumNormalized = 1 - priceSumNormalized;
+    feature.properties.priceSumNormalized = priceSumNormalized;
+
+    const computedValue =
+      (statuses[0] ? normalizedValues[0] * weights[0] : 0) +
+      (statuses[1] ? normalizedValues[1] * weights[1] : 0) +
+      (statuses[2] ? normalizedValues[2] * weights[2] : 0) +
+      (statuses[3] ? reversePriceSumNormalized * weights[3] : 0);
+
+    return computedValue;
+  });
+
+  // 전체 값을 0~100 범위로 정규화
+  const globalMin = Math.min(...computedValues);
+  const globalMax = Math.max(...computedValues);
+  const normalizeGlobal = (value) => (value - globalMin) / (globalMax - globalMin) * 100;
+
+  geojsonData.features = geojsonData.features.map((feature, index) => {
+    feature.properties.computedValue = normalizeGlobal(computedValues[index]);
     return feature;
   });
 
@@ -71,7 +103,7 @@ app.get('/geojson', (req, res) => {
       res.status(500).send('GeoJSON 파싱 오류');
       return;
     }
-    
+
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
@@ -102,7 +134,14 @@ app.post('/update-geojson', (req, res) => {
       return;
     }
 
-    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+    try {
+      geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+    } catch (computationError) {
+      console.error('GeoJSON 계산 오류:', computationError); // 에러 로그 추가
+      res.status(500).send('GeoJSON 계산 오류');
+      return;
+    }
+
     res.json(geojsonData);
   });
 });
