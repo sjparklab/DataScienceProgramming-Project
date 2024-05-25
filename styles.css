@@ -78,14 +78,3 @@ html, body {
   .update-button:hover {
     background-color: #0056b3;
   }
-  
-  #tooltip {
-    position: absolute;
-    z-index: 1001; /* Ensure tooltip is above other elements */
-    pointer-events: none;
-    background: white;
-    padding: 5px;
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  }
-  

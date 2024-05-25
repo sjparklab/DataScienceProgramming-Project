@@ -50,7 +50,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('http://localhost:3001/update-geojson', {
+      const response = await fetch('/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights, statuses })
@@ -86,7 +86,7 @@ function Root() {
     },
     getLineColor: [0, 0, 0, 255], // 경계선 색상 (검정색)
     getLineWidth: 2, // 경계선 두께
-    getElevation: d => (d.properties.computedValue || 0) * 50, // 높이 값 조정
+    getElevation: d => (d.properties.computedValue || 0) * 50, // 높이 값 조정, 50배 확대
     pickable: true,
     visible: true,
     lineWidthMinPixels: 2, // 최소 경계선 두께
@@ -94,9 +94,10 @@ function Root() {
       const tooltip = document.getElementById('tooltip');
       if (info.object) {
         const properties = info.object.properties;
+        const pixelRatio = window.devicePixelRatio || 1;
         tooltip.style.display = 'block';
-        tooltip.style.left = `${info.x}px`;
-        tooltip.style.top = `${info.y}px`;
+        tooltip.style.left = `${info.x / pixelRatio + 10}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
+        tooltip.style.top = `${info.y / pixelRatio + 10}px`; // 마우스 포인터에서 10px 아래로 위치
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
           <div>총세대수: ${properties['2023년_계_총세대수']}</div>
@@ -155,7 +156,7 @@ function Root() {
             <DeckGLOverlay layers={[geoJsonLayer]} />
             <NavigationControl position="top-left" />
           </Map>
-          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none' }} />
+          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none', transform: 'translate(-50%, -100%)' }} />
         </div>
       </div>
     </div>
