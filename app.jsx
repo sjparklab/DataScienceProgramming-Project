@@ -50,7 +50,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('/update-geojson', {
+      const response = await fetch('http://localhost:3001/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights, statuses })
@@ -96,8 +96,8 @@ function Root() {
         const properties = info.object.properties;
         const pixelRatio = window.devicePixelRatio || 1;
         tooltip.style.display = 'block';
-        tooltip.style.left = `${info.x / pixelRatio + 10}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
-        tooltip.style.top = `${info.y / pixelRatio + 10}px`; // 마우스 포인터에서 10px 아래로 위치
+        tooltip.style.left = `${info.x + 370}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
+        tooltip.style.top = `${info.y}px`; // 마우스 포인터에서 10px 아래로 위치
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
           <div>총세대수: ${properties['2023년_계_총세대수']}</div>
@@ -156,7 +156,7 @@ function Root() {
             <DeckGLOverlay layers={[geoJsonLayer]} />
             <NavigationControl position="top-left" />
           </Map>
-          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none', transform: 'translate(-50%, -100%)' }} />
+          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none' }} />
         </div>
       </div>
     </div>
