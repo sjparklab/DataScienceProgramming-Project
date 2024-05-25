@@ -35,7 +35,7 @@ function Root() {
   useEffect(() => {
     const fetchGeoJson = async () => {
       try {
-        const response = await fetch('http://sjpark-dev.com/geojson');
+        const response = await fetch('https://sjpark-dev.com/geojson');
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -50,7 +50,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('http://sjpark-dev.com/update-geojson', {
+      const response = await fetch('https://sjpark-dev.com/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights, statuses })
