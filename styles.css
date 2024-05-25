@@ -1,6 +1,7 @@
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Nanum Gothic', sans-serif;
+    font-weight: 700; /* 폰트를 두껍게 설정 */
   }
   
   .container {
@@ -13,10 +14,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f8f9fa;
+    background-color: #f8f9fa; /* 아주 옅은 그레이/화이트 */
+    color: #212529; /* 다크 그레이 */
     height: 54px;
     padding: 0 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 18px; /* 상단바 폰트 크기 조정 */
   }
   
   .top-bar .logo {
@@ -31,7 +34,7 @@ body {
   
   .side-bar {
     width: 360px;
-    background-color: #f4f4f4;
+    background-color: #e9ecef; /* 아주 옅은 그레이 */
     padding: 20px;
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
@@ -44,6 +47,12 @@ body {
   
   .control-box {
     margin-bottom: 20px;
+    padding: 10px;
+    background-color: #ffffff; /* 화이트 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-size: 16px; /* 사이드바 폰트 크기 조정 */
   }
   
   .control-box label {
@@ -51,19 +60,30 @@ body {
     margin-bottom: 5px;
   }
   
-  .control-box input[type="number"] {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-  
-  .activation {
+  .toggle-button-group {
     display: flex;
-    align-items: center;
+    justify-content: space-between;
   }
   
-  .activation label {
-    margin-right: 10px;
+  .toggle-button {
+    flex: 1;
+    padding: 10px 20px;
+    margin: 0 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px; /* 토글 버튼 폰트 크기 조정 */
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-button.active {
+    background-color: #28a745;
+  }
+  
+  .toggle-button.inactive {
+    background-color: #dc3545;
   }
   
   .update-button {
@@ -73,6 +93,8 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 16px; /* 업데이트 버튼 폰트 크기 조정 */
+    transition: background-color 0.3s ease;
   }
   
   .update-button:hover {
@@ -82,16 +104,5 @@ body {
   .map-container {
     flex: 1;
     position: relative;
-  }
-  
-  #tooltip {
-    position: absolute;
-    z-index: 1001;
-    pointer-events: none;
-    background: white;
-    padding: 5px;
-    border-radius: 3px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    display: none;
   }
   

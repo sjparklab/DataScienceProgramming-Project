@@ -4,7 +4,7 @@ import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { GeoJsonLayer } from 'deck.gl';
 import { MapboxOverlay as DeckOverlay } from '@deck.gl/mapbox';
 import { scaleSequential } from 'd3-scale';
-import { interpolateBlues } from 'd3-scale-chromatic';
+import { interpolateGreens } from 'd3-scale-chromatic';
 import { rgb } from 'd3-color';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './styles.css';
@@ -29,8 +29,9 @@ function DeckGLOverlay(props) {
 
 function Root() {
   const [geoJsonData, setGeoJsonData] = useState(null);
-  const [weights, setWeights] = useState([1, 1, 1, 1]);
   const [statuses, setStatuses] = useState([true, true, true, true]);
+  const [isLayerVisible, setIsLayerVisible] = useState(true);
+  const [is3D, setIs3D] = useState(true);
 
   useEffect(() => {
     const fetchGeoJson = async () => {
@@ -53,7 +54,7 @@ function Root() {
       const response = await fetch('https://sjpark-dev.com/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weights, statuses })
+        body: JSON.stringify({ weights: [1, 1, 1, 1], statuses })
       });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -70,15 +71,14 @@ function Root() {
   }
 
   // d3-scale을 사용하여 색상 범위 정의
-  const colorScale = scaleSequential(interpolateBlues)
-    .domain([0, 100]); // 데이터 범위에 맞게 조정
+  const colorScale = scaleSequential(interpolateGreens).domain([0, 100]); // 데이터 범위에 맞게 조정
 
   const geoJsonLayer = new GeoJsonLayer({
     id: 'geojson-layer',
     data: geoJsonData,
     filled: true,
-    extruded: true,
-    wireframe: true, // wireframe 사용
+    extruded: is3D,
+    wireframe: true,
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
       const color = rgb(colorScale(value));
@@ -88,7 +88,7 @@ function Root() {
     getLineWidth: 2, // 경계선 두께
     getElevation: d => (d.properties.computedValue || 0) * 50, // 높이 값 조정, 50배 확대
     pickable: true,
-    visible: true,
+    visible: isLayerVisible,
     lineWidthMinPixels: 2, // 최소 경계선 두께
     onHover: info => {
       const tooltip = document.getElementById('tooltip');
@@ -96,7 +96,7 @@ function Root() {
         const properties = info.object.properties;
         const pixelRatio = window.devicePixelRatio || 1;
         tooltip.style.display = 'block';
-        tooltip.style.left = `${info.x + 370}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
+        tooltip.style.left = `${info.x}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
         tooltip.style.top = `${info.y}px`; // 마우스 포인터에서 10px 아래로 위치
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
@@ -121,36 +121,71 @@ function Root() {
       <div className="main-content">
         <aside className="side-bar">
           <div className="control-panel">
+            <div className="control-box">
+              <label>GeoJSON 레이어 활성화:</label>
+              <div className="toggle-button-group">
+                <button
+                  className={`toggle-button ${isLayerVisible ? 'active' : 'inactive'}`}
+                  onClick={() => setIsLayerVisible(true)}
+                >
+                  활성화
+                </button>
+                <button
+                  className={`toggle-button ${!isLayerVisible ? 'active' : 'inactive'}`}
+                  onClick={() => setIsLayerVisible(false)}
+                >
+                  비활성화
+                </button>
+              </div>
+            </div>
+            <div className="control-box">
+              <label>지도 모드:</label>
+              <div className="toggle-button-group">
+                <button
+                  className={`toggle-button ${is3D ? 'active' : 'inactive'}`}
+                  onClick={() => setIs3D(true)}
+                >
+                  3D 모드
+                </button>
+                <button
+                  className={`toggle-button ${!is3D ? 'active' : 'inactive'}`}
+                  onClick={() => setIs3D(false)}
+                >
+                  2D 모드
+                </button>
+              </div>
+            </div>
             {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
               <div className="control-box" key={index}>
-                <label>{prop} 가중치:</label>
-                <input 
-                  type="number" 
-                  value={weights[index]} 
-                  onChange={e => {
-                    const newWeights = [...weights];
-                    newWeights[index] = Number(e.target.value);
-                    setWeights(newWeights);
-                  }} 
-                />
-                <div className="activation">
-                  <label>활성화:</label>
-                  <input 
-                    type="checkbox" 
-                    checked={statuses[index]} 
-                    onChange={e => {
+                <label>{prop} 활성화:</label>
+                <div className="toggle-button-group">
+                  <button
+                    className={`toggle-button ${statuses[index] ? 'active' : 'inactive'}`}
+                    onClick={() => {
                       const newStatuses = [...statuses];
-                      newStatuses[index] = e.target.checked;
+                      newStatuses[index] = true;
                       setStatuses(newStatuses);
-                    }} 
-                  />
+                    }}
+                  >
+                    활성화
+                  </button>
+                  <button
+                    className={`toggle-button ${!statuses[index] ? 'active' : 'inactive'}`}
+                    onClick={() => {
+                      const newStatuses = [...statuses];
+                      newStatuses[index] = false;
+                      setStatuses(newStatuses);
+                    }}
+                  >
+                    비활성화
+                  </button>
                 </div>
               </div>
             ))}
             <button className="update-button" onClick={updateGeoJson}>업데이트</button>
           </div>
         </aside>
-        <div className="map-container">
+        <main className="map-container">
           <Map
             initialViewState={INITIAL_VIEW_STATE}
             mapStyle={MAP_STYLE}
@@ -159,8 +194,8 @@ function Root() {
             <DeckGLOverlay layers={[geoJsonLayer]} />
             <NavigationControl position="top-left" />
           </Map>
-          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none' }} />
-        </div>
+          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', display: 'none' }} />
+        </main>
       </div>
     </div>
   );
