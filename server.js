@@ -19,7 +19,7 @@ app.use(cors({
 app.use(express.json());
 
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, '시군구_데이터통합.geojson');
+const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
