@@ -87,6 +87,7 @@ app.get('/geojson/town', async (req, res) => {
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
   }
 });
@@ -100,6 +101,7 @@ app.get('/geojson/city', async (req, res) => {
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
   }
 });
@@ -113,6 +115,7 @@ app.post('/update-geojson', async (req, res) => {
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
   } catch (error) {
+    console.error(error);
     res.status(500).send(error);
   }
 });
