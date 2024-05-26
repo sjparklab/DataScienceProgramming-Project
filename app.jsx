@@ -52,7 +52,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('/update-geojson', {
+      const response = await fetch('https://sjpark-dev.com/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statuses, useTownData })
