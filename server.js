@@ -52,7 +52,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   geojsonData.features.forEach(feature => {
     if (!feature.properties) {
       console.error('Invalid feature: properties is undefined', feature);
-      return; // Skip this feature
+      throw new Error('Invalid feature: properties is undefined');
     }
 
     const values = columns.map(column => {
@@ -99,7 +99,7 @@ const readGeoJsonFile = (filePath) => {
 app.get('/geojson/town', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonTownPath);
-    console.log('GeoJSON Town Data:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
+    console.log('GeoJSON Town Data:', geojsonData); // Log the data structure
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
@@ -114,7 +114,7 @@ app.get('/geojson/town', async (req, res) => {
 app.get('/geojson/city', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonCityPath);
-    console.log('GeoJSON City Data:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
+    console.log('GeoJSON City Data:', geojsonData); // Log the data structure
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
@@ -132,7 +132,7 @@ app.post('/update-geojson', async (req, res) => {
 
   try {
     let geojsonData = await readGeoJsonFile(geojsonPath);
-    console.log('GeoJSON Data for Update:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
+    console.log('GeoJSON Data for Update:', geojsonData); // Log the data structure
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
   } catch (error) {
