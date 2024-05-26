@@ -1,6 +1,10 @@
-body {
+/* styles.css */
+
+html, body, #root {
     margin: 0;
-    font-family: Arial, sans-serif;
+    padding: 0;
+    height: 100%;
+    overflow: hidden; /* 스크롤바 제거 */
   }
   
   .container {
@@ -12,38 +16,42 @@ body {
   .top-bar {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa;
+    justify-content: center; /* 가운데 정렬 */
+    width: 100%;
     height: 54px;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .top-bar .logo {
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
+    background-color: white;
+    z-index: 1000;
+    border-bottom: 1px solid #ccc; /* 상단바 경계선 */
   }
   
   .side-bar {
     width: 360px;
-    background-color: #f4f4f4;
-    padding: 20px;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
+    background-color: white;
+    z-index: 1000;
+    border-right: 1px solid #ccc; /* 사이드바 경계선 */
+    overflow-y: auto; /* 사이드바 내부 스크롤 */
+  }
+  
+  .main-content {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+  }
+  
+  .map-container {
+    flex-grow: 1;
   }
   
   .control-panel {
-    display: flex;
-    flex-direction: column;
+    padding: 10px;
   }
   
   .control-box {
-    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px; /* 박스 간의 간격 */
   }
   
   .control-box label {
@@ -51,32 +59,25 @@ body {
     margin-bottom: 5px;
   }
   
-  .control-box input[type="number"] {
-    width: 100%;
-    padding: 5px;
-    margin-bottom: 10px;
-  }
-  
   .activation {
     display: flex;
     align-items: center;
-  }
-  
-  .activation label {
-    margin-right: 10px;
+    margin-top: 5px;
   }
   
   .update-button {
+    width: 100%; /* 버튼 전체 너비 사용 */
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
+    border-radius: 5px;
   }
   
   .update-button:hover {
     background-color: #0056b3;
+<<<<<<< HEAD
   }
   
   .map-container {
@@ -95,3 +96,6 @@ body {
     display: none;
   }
   
+=======
+  }
+>>>>>>> parent of 5ad5305 (top-bar settings-1)

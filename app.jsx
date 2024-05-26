@@ -153,10 +153,7 @@ function Root() {
 
   return (
     <div className="container">
-      <header className="top-bar">
-        <img src="deu_logo.png" alt="동의대학교 로고" className="logo" />
-        동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
-      </header>
+      <header className="top-bar">상단바 내용</header>
       <div className="main-content">
         <aside className="side-bar">
           <div className="control-panel">
