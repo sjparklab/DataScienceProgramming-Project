@@ -1,9 +1,4 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
-import { DeckGL, GeoJsonLayer } from 'deck.gl';
-import { StaticMap } from 'react-map-gl';
-import { Checkbox, FormControlLabel, FormGroup } from '@material-ui/core';
-=======
 import { createRoot } from 'react-dom/client';
 import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { GeoJsonLayer } from 'deck.gl';
@@ -11,7 +6,6 @@ import { MapboxOverlay as DeckOverlay } from '@deck.gl/mapbox';
 import { scaleSequential } from 'd3-scale';
 import { interpolateBlues } from 'd3-scale-chromatic';
 import { rgb } from 'd3-color';
->>>>>>> parent of bf04287 (active-deactive settings)
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 const MAPBOX_ACCESS_TOKEN = 'YOUR_MAPBOX_ACCESS_TOKEN';
@@ -23,13 +17,6 @@ const INITIAL_VIEW_STATE = {
   bearing: 0
 };
 
-<<<<<<< HEAD
-const App = () => {
-  const [data, setData] = useState(null);
-  const [checked, setChecked] = useState({
-    townData: false,
-    cityData: false
-=======
 const MAP_STYLE = 'mapbox://styles/mapbox/standard';
 
 function DeckGLOverlay(props) {
@@ -121,7 +108,6 @@ function Root() {
         tooltip.style.display = 'none';
       }
     }
->>>>>>> parent of bf04287 (active-deactive settings)
   });
 
   const fetchGeoJsonData = async (useTownData) => {
@@ -166,40 +152,6 @@ function Root() {
   };
 
   return (
-<<<<<<< HEAD
-    <div>
-      <DeckGL
-        initialViewState={INITIAL_VIEW_STATE}
-        controller={true}
-        layers={[renderLayer()]}
-      >
-        <StaticMap
-          mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-        />
-      </DeckGL>
-      <FormGroup row>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked.townData}
-              onChange={handleCheckboxChange}
-              name="townData"
-            />
-          }
-          label="Town Data"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={checked.cityData}
-              onChange={handleCheckboxChange}
-              name="cityData"
-            />
-          }
-          label="City Data"
-        />
-      </FormGroup>
-=======
     <div className="container">
       <header className="top-bar">
         <img src="deu_logo.png" alt="동의대학교 로고" className="logo" />
@@ -249,7 +201,6 @@ function Root() {
           <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)', display: 'none' }} />
         </div>
       </div>
->>>>>>> parent of bf04287 (active-deactive settings)
     </div>
   );
 };
