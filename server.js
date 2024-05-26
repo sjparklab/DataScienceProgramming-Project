@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
+const geojsonCityPath = path.join(__dirname, 'updated_merged_data_final.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
@@ -35,20 +35,13 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean'
   ];
 
-  // Check if features array exists and is an array
   if (!Array.isArray(geojsonData.features)) {
     console.error('Invalid GeoJSON data: features is not an array');
     throw new Error('Invalid GeoJSON data: features is not an array');
   }
 
   const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => {
-      if (!f.properties || f.properties[column] === undefined) {
-        console.error(`Invalid feature: properties or ${column} is undefined`, f);
-        throw new Error(`Invalid feature: properties or ${column} is undefined`);
-      }
-      return parseFloat(f.properties[column]) || 0;
-    });
+    const values = geojsonData.features.map(f => parseFloat(f.properties?.[column]) || 0);
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
     return acc;
   }, {});
@@ -108,7 +101,6 @@ const readGeoJsonFile = (filePath) => {
 app.get('/geojson/town', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonTownPath);
-    console.log('GeoJSON Town Data:', geojsonData); // Log the data structure
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
@@ -123,7 +115,6 @@ app.get('/geojson/town', async (req, res) => {
 app.get('/geojson/city', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonCityPath);
-    console.log('GeoJSON City Data:', geojsonData); // Log the data structure
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
@@ -141,7 +132,6 @@ app.post('/update-geojson', async (req, res) => {
 
   try {
     let geojsonData = await readGeoJsonFile(geojsonPath);
-    console.log('GeoJSON Data for Update:', geojsonData); // Log the data structure
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
   } catch (error) {
