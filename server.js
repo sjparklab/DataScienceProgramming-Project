@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, 'updated_merged_data_final.geojson');
+const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
@@ -35,8 +35,8 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean'
   ];
 
-  // Check if features array exists and is an array
   if (!Array.isArray(geojsonData.features)) {
+    console.error('Invalid GeoJSON data: features is not an array');
     throw new Error('Invalid GeoJSON data: features is not an array');
   }
 
@@ -52,8 +52,8 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   };
 
   geojsonData.features.forEach(feature => {
-    // Check if properties object exists
     if (!feature.properties) {
+      console.error('Invalid feature: properties is undefined', feature);
       throw new Error('Invalid feature: properties is undefined');
     }
 
@@ -83,12 +83,14 @@ const readGeoJsonFile = (filePath) => {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
+        console.error('GeoJSON 파일 읽기 오류', err);
         reject('GeoJSON 파일 읽기 오류');
       } else {
         try {
           const jsonData = JSON.parse(data);
           resolve(jsonData);
         } catch (parseErr) {
+          console.error('GeoJSON 파싱 오류', parseErr);
           reject('GeoJSON 파싱 오류');
         }
       }
