@@ -4,7 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-const allowedOrigins = ['http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173'];
+const allowedOrigins = ['http://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com', 'https://sjpark-dev.com:5173'];
 
 app.use(cors({
   origin: function (origin, callback) {
