@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, 'merged_data_final_with_nulls.geojson');
+const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
@@ -34,6 +34,11 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'sum_all_shop',
     'montly-avg_mean'
   ];
+
+  // Check if features array exists and is an array
+  if (!Array.isArray(geojsonData.features)) {
+    throw new Error('Invalid GeoJSON data: features is not an array');
+  }
 
   const minMaxValues = columns.reduce((acc, column) => {
     const values = geojsonData.features.map(f => parseFloat(f.properties?.[column]) || 0);
@@ -47,7 +52,12 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   };
 
   geojsonData.features.forEach(feature => {
-    const values = columns.map(column => parseFloat(feature.properties?.[column]) || 0);
+    // Check if properties object exists
+    if (!feature.properties) {
+      throw new Error('Invalid feature: properties is undefined');
+    }
+
+    const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
     const normalizedValues = values.map((value, index) => {
       const minMax = minMaxValues[columns[index]];
       return minMax ? normalize(value, columns[index]) : 0;
@@ -75,7 +85,12 @@ const readGeoJsonFile = (filePath) => {
       if (err) {
         reject('GeoJSON 파일 읽기 오류');
       } else {
-        resolve(JSON.parse(data));
+        try {
+          const jsonData = JSON.parse(data);
+          resolve(jsonData);
+        } catch (parseErr) {
+          reject('GeoJSON 파싱 오류');
+        }
       }
     });
   });
@@ -91,7 +106,7 @@ app.get('/geojson/town', async (req, res) => {
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
@@ -105,7 +120,7 @@ app.get('/geojson/city', async (req, res) => {
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
@@ -119,7 +134,7 @@ app.post('/update-geojson', async (req, res) => {
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
-    res.status(500).send(error);
+    res.status(500).send(error.message);
   }
 });
 
