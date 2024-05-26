@@ -18,8 +18,7 @@ import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-const GEOJSON_URL = import.meta.env.VITE_GEOJSON_URL;
-const UPDATE_GEOJSON_URL = import.meta.env.VITE_UPDATE_GEOJSON_URL;
+const UPDATE_GEOJSON_URL = 'http://localhost:3001/update-geojson';  // API URL 수정
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
@@ -59,10 +58,11 @@ function Root() {
   const [statuses, setStatuses] = useState([true, true, true, true]);
   const [isLayerVisible, setIsLayerVisible] = useState(true);
   const [is3D, setIs3D] = useState(true);
+  const [selectedData, setSelectedData] = useState('sigungu');
 
-  const fetchGeoJson = useCallback(async () => {
+  const fetchGeoJson = useCallback(async (type) => {
     try {
-      const response = await fetch(GEOJSON_URL);
+      const response = await fetch(`http://localhost:3001/geojson/${type}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -74,12 +74,12 @@ function Root() {
   }, []);
 
   useEffect(() => {
-    fetchGeoJson();
-  }, [fetchGeoJson]);
+    fetchGeoJson(selectedData);
+  }, [fetchGeoJson, selectedData]);
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch(UPDATE_GEOJSON_URL, {
+      const response = await fetch(`${UPDATE_GEOJSON_URL}/${selectedData}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights: [1, 1, 1, 1], statuses })
@@ -193,6 +193,27 @@ function Root() {
                     style={{ flex: 1 }}
                   >
                     2D 모드
+                  </Button>
+                </div>
+              </div>
+              <div className="control-box">
+                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>데이터 파일 선택</Typography>
+                <div className="toggle-button-group">
+                  <Button
+                    variant={selectedData === 'sigungu' ? "contained" : "outlined"}
+                    color="primary"
+                    onClick={() => setSelectedData('sigungu')}
+                    style={{ flex: 1, marginRight: '10px' }}
+                  >
+                    시군구
+                  </Button>
+                  <Button
+                    variant={selectedData === 'dong' ? "contained" : "outlined"}
+                    color="secondary"
+                    onClick={() => setSelectedData('dong')}
+                    style={{ flex: 1 }}
+                  >
+                    읍면동
                   </Button>
                 </div>
               </div>

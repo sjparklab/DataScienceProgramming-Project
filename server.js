@@ -23,8 +23,6 @@ app.use(cors({
 
 app.use(express.json());
 
-const geojsonPath = path.join(__dirname, 'updated_merged_data_final.geojson');
-
 const parseValue = (value) => {
   if (typeof value === 'string') {
     return parseFloat(value.replace(/,/g, '')) || 0;
@@ -85,7 +83,10 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   return geojsonData;
 };
 
-app.get('/geojson', (req, res) => {
+app.get('/geojson/:type', (req, res) => {
+  const { type } = req.params;
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'dong_final_data.geojson');
+
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
       console.error('GeoJSON 파일 읽기 오류:', err);
@@ -110,8 +111,10 @@ app.get('/geojson', (req, res) => {
   });
 });
 
-app.post('/update-geojson', (req, res) => {
+app.post('/update-geojson/:type', (req, res) => {
+  const { type } = req.params;
   const { weights, statuses } = req.body;
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'dong_final_data.geojson');
 
   console.log('받은 가중치:', weights);
   console.log('받은 상태:', statuses);
