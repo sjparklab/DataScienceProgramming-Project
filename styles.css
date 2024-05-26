@@ -1,6 +1,11 @@
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif';
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
 }
 
 .container {
@@ -15,10 +20,12 @@ body {
 }
 
 .side-bar {
-  width: 360px;
-  padding: 20px;
+  width: 360px;  /* 사이드바의 총 너비를 설정 */
+  padding: 10px;  /* 사이드바의 내부 패딩 설정 */
   box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
 }
 
 .control-panel {
@@ -27,12 +34,23 @@ body {
 }
 
 .control-box {
-  margin-bottom: 20px;
-  padding: 15px;
+  margin-bottom: 15px;
+  padding: 10px;
   background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.sidebar-label {
+  font-size: 14px;
+  margin-bottom: 10px;
 }
 
 .toggle-button-group {
@@ -40,9 +58,22 @@ body {
   justify-content: space-between;
 }
 
+.toggle-button {
+  font-size: 12px;
+  padding: 6px;
+  flex: 1;
+}
+
+.update-button {
+  font-size: 12px;
+  padding: 10px;
+  width: 100%;
+}
+
 .map-container {
   flex: 1;
   position: relative;
+  transition: margin-left 0.3s;
 }
 
 #tooltip {

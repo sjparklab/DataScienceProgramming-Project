@@ -14,11 +14,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import Drawer from '@mui/material/Drawer';
+import MenuIcon from '@mui/icons-material/Menu';
 import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-const UPDATE_GEOJSON_URL = 'https://sjpark-dev.com/update-geojson';  // API URL 수정
+const GEOJSON_URL = import.meta.env.VITE_GEOJSON_URL;
+const UPDATE_GEOJSON_URL = 'http://localhost:3001/update-geojson';
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
@@ -59,10 +62,11 @@ function Root() {
   const [isLayerVisible, setIsLayerVisible] = useState(true);
   const [is3D, setIs3D] = useState(true);
   const [selectedData, setSelectedData] = useState('sigungu');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const fetchGeoJson = useCallback(async (type) => {
     try {
-      const response = await fetch(`https://sjpark-dev.com/geojson/${type}`);
+      const response = await fetch(`${GEOJSON_URL}/${type}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -77,12 +81,12 @@ function Root() {
     fetchGeoJson(selectedData);
   }, [fetchGeoJson, selectedData]);
 
-  const updateGeoJson = async () => {
+  const updateGeoJson = useCallback(async (newStatuses) => {
     try {
       const response = await fetch(`${UPDATE_GEOJSON_URL}/${selectedData}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weights: [1, 1, 1, 1], statuses })
+        body: JSON.stringify({ weights: [1, 1, 1, 1], statuses: newStatuses })
       });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -92,6 +96,20 @@ function Root() {
     } catch (error) {
       console.error('GeoJSON 데이터 업데이트 오류:', error);
     }
+  }, [selectedData]);
+
+  const handleStatusChange = (index, value) => {
+    const newStatuses = [...statuses];
+    newStatuses[index] = value;
+    setStatuses(newStatuses);
+    updateGeoJson(newStatuses);
+  };
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
   };
 
   if (!geoJsonData) {
@@ -141,9 +159,12 @@ function Root() {
   return (
     <ThemeProvider theme={theme}>
       <div className="container">
-        <AppBar position="static" color="default" style={{ background: '#ffffff' }}>
+        <AppBar position="fixed" color="default" style={{ background: '#ffffff' }}>
           <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="logo">
+            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
+              <MenuIcon />
+            </IconButton>
+            <IconButton edge="start" color="inherit" aria-label="logo" style={{ marginLeft: '10px' }}>
               <img src="deu_logo.png" alt="동의대학교 로고" style={{ height: '40px' }} />
             </IconButton>
             <Typography variant="h6" style={{ flexGrow: 1, color: '#000000', fontWeight: 'bold' }}>
@@ -151,17 +172,31 @@ function Root() {
             </Typography>
           </Toolbar>
         </AppBar>
-        <div className="main-content">
-          <aside className="side-bar" style={{ background: '#ffffff', borderRight: '1px solid #ddd' }}>
+        <div className="main-content" style={{ marginTop: '64px' }}>
+          <Drawer
+            variant="persistent"
+            anchor="left"
+            open={isDrawerOpen}
+            PaperProps={{
+              style: {
+                width: 360,  // 사이드바의 총 너비를 설정
+                borderTopRightRadius: 16,
+                borderBottomRightRadius: 16,
+                boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
+                padding: '10px',  // 사이드바의 내부 패딩 설정
+                marginTop: '64px'
+              }
+            }}
+          >
             <div className="control-panel">
               <div className="control-box">
-                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>레이어 설정</Typography>
+                <Typography className="sidebar-title">레이어 설정</Typography>
                 <div className="toggle-button-group">
                   <Button
                     variant={isLayerVisible ? "contained" : "outlined"}
                     color="primary"
                     onClick={() => setIsLayerVisible(true)}
-                    style={{ flex: 1, marginRight: '10px' }}
+                    className="toggle-button"
                   >
                     활성화
                   </Button>
@@ -169,20 +204,20 @@ function Root() {
                     variant={!isLayerVisible ? "contained" : "outlined"}
                     color="secondary"
                     onClick={() => setIsLayerVisible(false)}
-                    style={{ flex: 1 }}
+                    className="toggle-button"
                   >
                     비활성화
                   </Button>
                 </div>
               </div>
               <div className="control-box">
-                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>화면모드 설정</Typography>
+                <Typography className="sidebar-title">화면모드 설정</Typography>
                 <div className="toggle-button-group">
                   <Button
                     variant={is3D ? "contained" : "outlined"}
                     color="primary"
                     onClick={() => setIs3D(true)}
-                    style={{ flex: 1, marginRight: '10px' }}
+                    className="toggle-button"
                   >
                     3D 모드
                   </Button>
@@ -190,20 +225,20 @@ function Root() {
                     variant={!is3D ? "contained" : "outlined"}
                     color="secondary"
                     onClick={() => setIs3D(false)}
-                    style={{ flex: 1 }}
+                    className="toggle-button"
                   >
                     2D 모드
                   </Button>
                 </div>
               </div>
               <div className="control-box">
-                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>데이터 파일 선택</Typography>
+                <Typography className="sidebar-title">데이터 파일 선택</Typography>
                 <div className="toggle-button-group">
                   <Button
                     variant={selectedData === 'sigungu' ? "contained" : "outlined"}
                     color="primary"
                     onClick={() => setSelectedData('sigungu')}
-                    style={{ flex: 1, marginRight: '10px' }}
+                    className="toggle-button"
                   >
                     시군구
                   </Button>
@@ -211,7 +246,7 @@ function Root() {
                     variant={selectedData === 'dong' ? "contained" : "outlined"}
                     color="secondary"
                     onClick={() => setSelectedData('dong')}
-                    style={{ flex: 1 }}
+                    className="toggle-button"
                   >
                     읍면동
                   </Button>
@@ -219,47 +254,30 @@ function Root() {
               </div>
               {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
                 <div className="control-box" key={index}>
-                  <Typography variant="body1" style={{ marginBottom: '10px' }}>{prop}</Typography>
+                  <Typography className="sidebar-label">{prop}</Typography>
                   <div className="toggle-button-group">
                     <Button
                       variant={statuses[index] ? "contained" : "outlined"}
                       color="primary"
-                      onClick={() => {
-                        const newStatuses = [...statuses];
-                        newStatuses[index] = true;
-                        setStatuses(newStatuses);
-                      }}
-                      style={{ flex: 1, marginRight: '10px' }}
+                      onClick={() => handleStatusChange(index, true)}
+                      className="toggle-button"
                     >
                       활성화
                     </Button>
                     <Button
                       variant={!statuses[index] ? "contained" : "outlined"}
                       color="secondary"
-                      onClick={() => {
-                        const newStatuses = [...statuses];
-                        newStatuses[index] = false;
-                        setStatuses(newStatuses);
-                      }}
-                      style={{ flex: 1 }}
+                      onClick={() => handleStatusChange(index, false)}
+                      className="toggle-button"
                     >
                       비활성화
                     </Button>
                   </div>
                 </div>
               ))}
-              <Button
-                variant="contained"
-                color="primary"
-                className="update-button"
-                onClick={updateGeoJson}
-                style={{ marginTop: '20px' }}
-              >
-                업데이트
-              </Button>
             </div>
-          </aside>
-          <main className="map-container">
+          </Drawer>
+          <main className="map-container" style={{ marginLeft: isDrawerOpen ? '360px' : '0', transition: 'margin-left 0.3s' }}>
             <Map
               initialViewState={INITIAL_VIEW_STATE}
               mapStyle={MAP_STYLE}
