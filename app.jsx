@@ -14,7 +14,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -39,6 +38,9 @@ function DeckGLOverlay(props) {
 }
 
 const theme = createTheme({
+  typography: {
+    fontFamily: 'Roboto, sans-serif',
+  },
   palette: {
     primary: {
       main: '#007bff',
@@ -111,10 +113,10 @@ function Root() {
     },
     getLineColor: [0, 0, 0, 255],
     getLineWidth: 2,
-    getElevation: d => (d.properties.computedValue || 0) * 50,
+    getElevation: d => is3D ? (d.properties.computedValue || 0) * 50 : 0,
     pickable: true,
     visible: isLayerVisible,
-    lineWidthMinPixels: 2,
+    lineWidthMinPixels: is3D ? 2 : 1,
     onHover: info => {
       const tooltip = document.getElementById('tooltip');
       if (info.object) {
@@ -144,7 +146,7 @@ function Root() {
             <IconButton edge="start" color="inherit" aria-label="logo">
               <img src="deu_logo.png" alt="동의대학교 로고" style={{ height: '40px' }} />
             </IconButton>
-            <Typography variant="h6" style={{ flexGrow: 1, color: '#000000' }}>
+            <Typography variant="h6" style={{ flexGrow: 1, color: '#000000', fontWeight: 'bold' }}>
               동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
             </Typography>
           </Toolbar>
@@ -153,12 +155,13 @@ function Root() {
           <aside className="side-bar" style={{ background: '#ffffff', borderRight: '1px solid #ddd' }}>
             <div className="control-panel">
               <div className="control-box">
-                <label>GeoJSON 레이어 활성화:</label>
+                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>레이어 설정</Typography>
                 <div className="toggle-button-group">
                   <Button
                     variant={isLayerVisible ? "contained" : "outlined"}
                     color="primary"
                     onClick={() => setIsLayerVisible(true)}
+                    style={{ flex: 1, marginRight: '10px' }}
                   >
                     활성화
                   </Button>
@@ -166,18 +169,20 @@ function Root() {
                     variant={!isLayerVisible ? "contained" : "outlined"}
                     color="secondary"
                     onClick={() => setIsLayerVisible(false)}
+                    style={{ flex: 1 }}
                   >
                     비활성화
                   </Button>
                 </div>
               </div>
               <div className="control-box">
-                <label>지도 모드:</label>
+                <Typography variant="h6" style={{ marginBottom: '10px', fontWeight: 'bold' }}>화면모드 설정</Typography>
                 <div className="toggle-button-group">
                   <Button
                     variant={is3D ? "contained" : "outlined"}
                     color="primary"
                     onClick={() => setIs3D(true)}
+                    style={{ flex: 1, marginRight: '10px' }}
                   >
                     3D 모드
                   </Button>
@@ -185,6 +190,7 @@ function Root() {
                     variant={!is3D ? "contained" : "outlined"}
                     color="secondary"
                     onClick={() => setIs3D(false)}
+                    style={{ flex: 1 }}
                   >
                     2D 모드
                   </Button>
@@ -192,7 +198,7 @@ function Root() {
               </div>
               {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
                 <div className="control-box" key={index}>
-                  <label>{prop} 활성화:</label>
+                  <Typography variant="body1" style={{ marginBottom: '10px' }}>{prop}</Typography>
                   <div className="toggle-button-group">
                     <Button
                       variant={statuses[index] ? "contained" : "outlined"}
@@ -202,6 +208,7 @@ function Root() {
                         newStatuses[index] = true;
                         setStatuses(newStatuses);
                       }}
+                      style={{ flex: 1, marginRight: '10px' }}
                     >
                       활성화
                     </Button>
@@ -213,6 +220,7 @@ function Root() {
                         newStatuses[index] = false;
                         setStatuses(newStatuses);
                       }}
+                      style={{ flex: 1 }}
                     >
                       비활성화
                     </Button>
