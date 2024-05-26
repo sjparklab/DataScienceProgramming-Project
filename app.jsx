@@ -29,7 +29,6 @@ function DeckGLOverlay(props) {
 
 function Root() {
   const [geoJsonData, setGeoJsonData] = useState(null);
-  const [weights, setWeights] = useState([1, 1, 1, 1]);
   const [statuses, setStatuses] = useState([true, true, true, true]);
   const [useTownData, setUseTownData] = useState(true);
   const [extruded, setExtruded] = useState(true);
@@ -56,7 +55,7 @@ function Root() {
       const response = await fetch('https://sjpark-dev.com/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ weights, statuses, useTownData })
+        body: JSON.stringify({ statuses, useTownData })
       });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
