@@ -85,7 +85,6 @@ app.get('/geojson/town', async (req, res) => {
     const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-    console.log('Town GeoJSON Data:', JSON.stringify(geojsonData, null, 2));
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
@@ -100,7 +99,6 @@ app.get('/geojson/city', async (req, res) => {
     const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-    console.log('City GeoJSON Data:', JSON.stringify(geojsonData, null, 2));
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
@@ -115,7 +113,6 @@ app.post('/update-geojson', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonPath);
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-    console.log('Updated GeoJSON Data:', JSON.stringify(geojsonData, null, 2));
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
