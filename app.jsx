@@ -120,7 +120,7 @@ function Root() {
   return (
     <div className="container">
       <header className="top-bar">
-        <img className="logo" src="/path/to/deu_logo.png" alt="동의대학교 로고" />
+        <img className="logo" src="deu_logo.png" alt="동의대학교 로고" />
         동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
       </header>
       <div className="main-content">
@@ -296,7 +296,7 @@ function Root() {
             id="tooltip"
             style={{
               position: 'absolute',
-              zIndex: 1,
+              zIndex: 1001,
               pointerEvents: 'none',
               background: 'white',
               padding: '5px',
