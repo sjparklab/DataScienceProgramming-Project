@@ -35,7 +35,7 @@ function Root() {
 
   const fetchGeoJson = async () => {
     try {
-      const response = await fetch(`https://sjpark-dev.com/geojson/${useTownData ? 'town' : 'city'}`);
+      const response = await fetch(`/geojson/${useTownData ? 'town' : 'city'}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -52,7 +52,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('https://sjpark-dev.com/update-geojson', {
+      const response = await fetch('/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statuses, useTownData })

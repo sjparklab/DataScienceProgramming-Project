@@ -48,10 +48,13 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 
   geojsonData.features.forEach(feature => {
     const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
-    const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
+    const normalizedValues = values.map((value, index) => {
+      const minMax = minMaxValues[columns[index]];
+      return minMax ? normalize(value, columns[index]) : 0;
+    });
 
-    const averagePriceIndex = (values[3] / 3);
-    const reverseAveragePriceIndex = 1 - normalize(averagePriceIndex, columns[3]);
+    const averagePriceIndex = (values[3] / 3) || 0;
+    const reverseAveragePriceIndex = 1 - (normalize(averagePriceIndex, columns[3]) || 0);
 
     const computedValue = 
       (statuses[0] ? normalizedValues[0] * weights[0] : 0) +
@@ -122,6 +125,14 @@ app.post('/update-geojson', async (req, res) => {
 
 const server = app.listen(process.env.PORT || 3001, () => {
   console.log(`서버가 ${server.address().port} 포트에서 실행 중입니다`);
+});
+
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${error.port} is already in use`);
+  } else {
+    console.error(error);
+  }
 });
 
 server.timeout = 600000; // 10 minutes
