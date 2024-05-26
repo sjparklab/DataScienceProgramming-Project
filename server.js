@@ -24,7 +24,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const geojsonTownPath = path.join(__dirname, 'updated_merged_data_final.geojson');
+const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
 const geojsonCityPath = path.join(__dirname, 'updated_merged_data_final.geojson');
 
 const getComputedGeoJson = (geojsonData) => {
