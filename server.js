@@ -36,7 +36,7 @@ const getComputedGeoJson = (geojsonData) => {
   ];
 
   const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => {f
+    const values = geojsonData.features.map(f => {
       const value = f.properties && f.properties[column] !== undefined ? parseFloat(f.properties[column]) : 0;
       return value;
     });
