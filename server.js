@@ -25,7 +25,7 @@ app.use(cors({
 app.use(express.json());
 
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, 'merged_data_final_with_nulls.geojson');
+const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
@@ -36,7 +36,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   ];
 
   const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => parseFloat(f.properties[column]) || 0);
+    const values = geojsonData.features.map(f => parseFloat(f.properties?.[column]) || 0);
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
     return acc;
   }, {});
@@ -47,7 +47,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   };
 
   geojsonData.features.forEach(feature => {
-    const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
+    const values = columns.map(column => parseFloat(feature.properties?.[column]) || 0);
     const normalizedValues = values.map((value, index) => {
       const minMax = minMaxValues[columns[index]];
       return minMax ? normalize(value, columns[index]) : 0;
