@@ -2,9 +2,12 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173', 'http://192.168.0.3:5173', 'http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com'];
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -35,7 +38,6 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
 
-  // 가격 관련 데이터의 합산 값을 계산하여 추가
   geojsonData.features.forEach(feature => {
     const priceSum = parseValue(feature.properties['montly-avg_mean']) +
                      parseValue(feature.properties['dep-avg_rent_mean']) +
@@ -43,7 +45,6 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     feature.properties.priceSum = priceSum;
   });
 
-  // min-max 정규화
   const minMaxValues = columns.concat('priceSum').reduce((acc, column) => {
     const values = geojsonData.features.map(f => parseValue(f.properties[column]));
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
@@ -55,12 +56,10 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     return (value - min) / (max - min);
   };
 
-  // 가중치를 적용하여 계산
   const computedValues = geojsonData.features.map(feature => {
     const values = columns.map(column => parseValue(feature.properties[column]));
     const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
 
-    // 가격 합산 값 역으로 정규화
     const priceSumNormalized = normalize(feature.properties.priceSum, 'priceSum');
     const reversePriceSumNormalized = 1 - priceSumNormalized;
     feature.properties.priceSumNormalized = priceSumNormalized;
@@ -74,7 +73,6 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     return computedValue;
   });
 
-  // 전체 값을 0~100 범위로 정규화
   const globalMin = Math.min(...computedValues);
   const globalMax = Math.max(...computedValues);
   const normalizeGlobal = (value) => (value - globalMin) / (globalMax - globalMin) * 100;
@@ -90,7 +88,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 app.get('/geojson', (req, res) => {
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
-      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
+      console.error('GeoJSON 파일 읽기 오류:', err);
       res.status(500).send('GeoJSON 파일 읽기 오류');
       return;
     }
@@ -99,7 +97,7 @@ app.get('/geojson', (req, res) => {
     try {
       geojsonData = JSON.parse(data);
     } catch (parseError) {
-      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
+      console.error('GeoJSON 파싱 오류:', parseError);
       res.status(500).send('GeoJSON 파싱 오류');
       return;
     }
@@ -115,12 +113,12 @@ app.get('/geojson', (req, res) => {
 app.post('/update-geojson', (req, res) => {
   const { weights, statuses } = req.body;
 
-  console.log('받은 가중치:', weights); // 디버깅 로그 추가
-  console.log('받은 상태:', statuses); // 디버깅 로그 추가
+  console.log('받은 가중치:', weights);
+  console.log('받은 상태:', statuses);
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
-      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
+      console.error('GeoJSON 파일 읽기 오류:', err);
       res.status(500).send('GeoJSON 파일 읽기 오류');
       return;
     }
@@ -129,7 +127,7 @@ app.post('/update-geojson', (req, res) => {
     try {
       geojsonData = JSON.parse(data);
     } catch (parseError) {
-      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
+      console.error('GeoJSON 파싱 오류:', parseError);
       res.status(500).send('GeoJSON 파싱 오류');
       return;
     }
@@ -137,7 +135,7 @@ app.post('/update-geojson', (req, res) => {
     try {
       geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     } catch (computationError) {
-      console.error('GeoJSON 계산 오류:', computationError); // 에러 로그 추가
+      console.error('GeoJSON 계산 오류:', computationError);
       res.status(500).send('GeoJSON 계산 오류');
       return;
     }

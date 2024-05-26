@@ -14,3 +14,7 @@ dev.stderr.on('data', (data) => {
 dev.on('close', (code) => {
   console.log(`child process exited with code ${code}`);
 });
+
+dev.on('error', (err) => {
+  console.error('Failed to start child process:', err);
+});

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { GeoJsonLayer } from 'deck.gl';
@@ -12,7 +12,7 @@ import './styles.css';
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
 
 const INITIAL_VIEW_STATE = {
-  latitude: 35.9078, // 대한민국 중심부
+  latitude: 35.9078,
   longitude: 127.7669,
   zoom: 7,
   bearing: 0,
@@ -33,25 +33,26 @@ function Root() {
   const [isLayerVisible, setIsLayerVisible] = useState(true);
   const [is3D, setIs3D] = useState(true);
 
-  useEffect(() => {
-    const fetchGeoJson = async () => {
-      try {
-        const response = await fetch('https://sjpark-dev.com/geojson');
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setGeoJsonData(data);
-      } catch (error) {
-        console.error('GeoJSON 데이터 가져오기 오류:', error);
+  const fetchGeoJson = useCallback(async () => {
+    try {
+      const response = await fetch(process.env.REACT_APP_GEOJSON_URL);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-    };
-    fetchGeoJson();
+      const data = await response.json();
+      setGeoJsonData(data);
+    } catch (error) {
+      console.error('GeoJSON 데이터 가져오기 오류:', error);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchGeoJson();
+  }, [fetchGeoJson]);
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('https://sjpark-dev.com/update-geojson', {
+      const response = await fetch(process.env.REACT_APP_UPDATE_GEOJSON_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights: [1, 1, 1, 1], statuses })
@@ -70,8 +71,7 @@ function Root() {
     return <div>로딩 중...</div>;
   }
 
-  // d3-scale을 사용하여 색상 범위 정의
-  const colorScale = scaleSequential(interpolateGreens).domain([0, 100]); // 데이터 범위에 맞게 조정
+  const colorScale = scaleSequential(interpolateGreens).domain([0, 100]);
 
   const geoJsonLayer = new GeoJsonLayer({
     id: 'geojson-layer',
@@ -82,22 +82,22 @@ function Root() {
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
       const color = rgb(colorScale(value));
-      return [color.r, color.g, color.b, 180]; // RGBA
+      return [color.r, color.g, color.b, 180];
     },
-    getLineColor: [0, 0, 0, 255], // 경계선 색상 (검정색)
-    getLineWidth: 2, // 경계선 두께
-    getElevation: d => (d.properties.computedValue || 0) * 50, // 높이 값 조정, 50배 확대
+    getLineColor: [0, 0, 0, 255],
+    getLineWidth: 2,
+    getElevation: d => (d.properties.computedValue || 0) * 50,
     pickable: true,
     visible: isLayerVisible,
-    lineWidthMinPixels: 2, // 최소 경계선 두께
+    lineWidthMinPixels: 2,
     onHover: info => {
       const tooltip = document.getElementById('tooltip');
       if (info.object) {
         const properties = info.object.properties;
         const pixelRatio = window.devicePixelRatio || 1;
         tooltip.style.display = 'block';
-        tooltip.style.left = `${info.x}px`; // 마우스 포인터에서 10px 오른쪽으로 위치
-        tooltip.style.top = `${info.y}px`; // 마우스 포인터에서 10px 아래로 위치
+        tooltip.style.left = `${info.x}px`;
+        tooltip.style.top = `${info.y}px`;
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
           <div>총세대수: ${properties['2023년_계_총세대수']}</div>
@@ -167,7 +167,7 @@ function Root() {
                       setStatuses(newStatuses);
                     }}
                   >
-                    활성화
+                      활성화
                   </button>
                   <button
                     className={`toggle-button ${!statuses[index] ? 'active' : 'inactive'}`}
@@ -177,7 +177,7 @@ function Root() {
                       setStatuses(newStatuses);
                     }}
                   >
-                    비활성화
+                      비활성화
                   </button>
                 </div>
               </div>
