@@ -4,13 +4,7 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://sjpark-dev.com:5173',
-  'http://sjpark-dev.com',
-  'https://sjpark-dev.com',
-  'https://sjpark-dev.com:5173'
-];
+const allowedOrigins = ['http://localhost:5173', 'http://192.168.0.3:5173', 'http://sjpark-dev.com:5173', 'https://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -19,29 +13,39 @@ app.use(cors({
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
 }));
 
 app.use(express.json());
 
-const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
-const geojsonCityPath = path.join(__dirname, 'sigungu_final.geojson');
+const geojsonPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
+
+const parseValue = (value) => {
+  if (typeof value === 'string') {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  }
+  return parseFloat(value) || 0;
+};
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
-    '2023년_계_총세대수',
-    'count_transport',
-    'sum_all_shop',
-    'montly-avg_mean'
+    '2023년_계_총세대수', 'count_transport', 'sum_all_shop', 
+    'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
 
-  if (!Array.isArray(geojsonData.features)) {
-    console.error('Invalid GeoJSON data: features is not an array');
-    throw new Error('Invalid GeoJSON data: features is not an array');
-  }
+  // 가격 관련 데이터의 합산 값을 계산하여 추가
+  geojsonData.features.forEach(feature => {
+    const priceSum = parseValue(feature.properties['montly-avg_mean']) +
+                     parseValue(feature.properties['dep-avg_rent_mean']) +
+                     parseValue(feature.properties['dep-avg_deposit_mean']);
+    feature.properties.priceSum = priceSum;
+  });
 
-  const minMaxValues = columns.reduce((acc, column) => {
-    const values = geojsonData.features.map(f => parseFloat(f.properties?.[column]) || 0);
+  // min-max 정규화
+  const minMaxValues = columns.concat('priceSum').reduce((acc, column) => {
+    const values = geojsonData.features.map(f => parseValue(f.properties[column]));
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
     return acc;
   }, {});
@@ -51,105 +55,98 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     return (value - min) / (max - min);
   };
 
-  geojsonData.features.forEach(feature => {
-    if (!feature.properties) {
-      console.error('Invalid feature: properties is undefined', feature);
-      throw new Error('Invalid feature: properties is undefined');
-    }
+  // 가중치를 적용하여 계산
+  const computedValues = geojsonData.features.map(feature => {
+    const values = columns.map(column => parseValue(feature.properties[column]));
+    const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
 
-    const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
-    const normalizedValues = values.map((value, index) => {
-      const minMax = minMaxValues[columns[index]];
-      return minMax ? normalize(value, columns[index]) : 0;
-    });
+    // 가격 합산 값 역으로 정규화
+    const priceSumNormalized = normalize(feature.properties.priceSum, 'priceSum');
+    const reversePriceSumNormalized = 1 - priceSumNormalized;
+    feature.properties.priceSumNormalized = priceSumNormalized;
 
-    const averagePriceIndex = (values[3] / 3) || 0;
-    const reverseAveragePriceIndex = 1 - (normalize(averagePriceIndex, columns[3]) || 0);
-
-    const computedValue = 
+    const computedValue =
       (statuses[0] ? normalizedValues[0] * weights[0] : 0) +
       (statuses[1] ? normalizedValues[1] * weights[1] : 0) +
       (statuses[2] ? normalizedValues[2] * weights[2] : 0) +
-      (statuses[3] ? reverseAveragePriceIndex * weights[3] : 0);
+      (statuses[3] ? reversePriceSumNormalized * weights[3] : 0);
 
-    feature.properties.computedValue = computedValue;
-    feature.properties.priceSumNormalized = normalizedValues[3];
+    return computedValue;
+  });
+
+  // 전체 값을 0~100 범위로 정규화
+  const globalMin = Math.min(...computedValues);
+  const globalMax = Math.max(...computedValues);
+  const normalizeGlobal = (value) => (value - globalMin) / (globalMax - globalMin) * 100;
+
+  geojsonData.features = geojsonData.features.map((feature, index) => {
+    feature.properties.computedValue = normalizeGlobal(computedValues[index]);
+    return feature;
   });
 
   return geojsonData;
 };
 
-const readGeoJsonFile = (filePath) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        console.error('GeoJSON 파일 읽기 오류', err);
-        reject('GeoJSON 파일 읽기 오류');
-      } else {
-        try {
-          const jsonData = JSON.parse(data);
-          resolve(jsonData);
-        } catch (parseErr) {
-          console.error('GeoJSON 파싱 오류', parseErr);
-          reject('GeoJSON 파싱 오류');
-        }
-      }
-    });
+app.get('/geojson', (req, res) => {
+  fs.readFile(geojsonPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
+      res.status(500).send('GeoJSON 파일 읽기 오류');
+      return;
+    }
+
+    let geojsonData;
+    try {
+      geojsonData = JSON.parse(data);
+    } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
+      res.status(500).send('GeoJSON 파싱 오류');
+      return;
+    }
+
+    const weights = [1, 1, 1, 1];
+    const statuses = [true, true, true, true];
+
+    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+    res.json(geojsonData);
   });
-};
+});
 
-app.get('/geojson/town', async (req, res) => {
-  try {
-    let geojsonData = await readGeoJsonFile(geojsonTownPath);
-    const weights = [1, 1, 1, 1];
-    const statuses = [true, true, true, true];
+app.post('/update-geojson', (req, res) => {
+  const { weights, statuses } = req.body;
 
-    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+  console.log('받은 가중치:', weights); // 디버깅 로그 추가
+  console.log('받은 상태:', statuses); // 디버깅 로그 추가
+
+  fs.readFile(geojsonPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err); // 에러 로그 추가
+      res.status(500).send('GeoJSON 파일 읽기 오류');
+      return;
+    }
+
+    let geojsonData;
+    try {
+      geojsonData = JSON.parse(data);
+    } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError); // 에러 로그 추가
+      res.status(500).send('GeoJSON 파싱 오류');
+      return;
+    }
+
+    try {
+      geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+    } catch (computationError) {
+      console.error('GeoJSON 계산 오류:', computationError); // 에러 로그 추가
+      res.status(500).send('GeoJSON 계산 오류');
+      return;
+    }
+
     res.json(geojsonData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
-  }
+  });
 });
 
-app.get('/geojson/city', async (req, res) => {
-  try {
-    let geojsonData = await readGeoJsonFile(geojsonCityPath);
-    const weights = [1, 1, 1, 1];
-    const statuses = [true, true, true, true];
-
-    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-    res.json(geojsonData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
-  }
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`서버가 ${PORT} 포트에서 실행 중입니다`);
 });
-
-app.post('/update-geojson', async (req, res) => {
-  const { weights, statuses, useTownData } = req.body;
-  const geojsonPath = useTownData ? geojsonTownPath : geojsonCityPath;
-
-  try {
-    let geojsonData = await readGeoJsonFile(geojsonPath);
-    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-    res.json(geojsonData);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error.message);
-  }
-});
-
-const server = app.listen(process.env.PORT || 3001, () => {
-  console.log(`서버가 ${server.address().port} 포트에서 실행 중입니다`);
-});
-
-server.on('error', (error) => {
-  if (error.code === 'EADDRINUSE') {
-    console.error(`Port ${error.port} is already in use`);
-  } else {
-    console.error(error);
-  }
-});
-
-server.timeout = 600000; // 10 minutes
