@@ -35,7 +35,7 @@ function Root() {
 
   const fetchGeoJson = async () => {
     try {
-      const response = await fetch(`/geojson/${useTownData ? 'town' : 'city'}`);
+      const response = await fetch(`https://sjpark-dev.com/geojson/${useTownData ? 'town' : 'city'}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
