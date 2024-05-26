@@ -35,19 +35,10 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     'montly-avg_mean'
   ];
 
-  // Check if features array exists and is an array
-  if (!Array.isArray(geojsonData.features)) {
-    console.error('Invalid GeoJSON data: features is not an array');
-    throw new Error('Invalid GeoJSON data: features is not an array');
-  }
-
   const minMaxValues = columns.reduce((acc, column) => {
     const values = geojsonData.features.map(f => {
-      if (!f.properties || f.properties[column] === undefined) {
-        console.error(`Invalid feature: properties or ${column} is undefined`, f);
-        throw new Error(`Invalid feature: properties or ${column} is undefined`);
-      }
-      return parseFloat(f.properties[column]) || 0;
+      const value = f.properties && f.properties[column] !== undefined ? parseFloat(f.properties[column]) : 0;
+      return value;
     });
     acc[column] = { min: Math.min(...values), max: Math.max(...values) };
     return acc;
@@ -64,11 +55,11 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
       throw new Error('Invalid feature: properties is undefined');
     }
 
-    const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
-    const normalizedValues = values.map((value, index) => {
-      const minMax = minMaxValues[columns[index]];
-      return minMax ? normalize(value, columns[index]) : 0;
+    const values = columns.map(column => {
+      const value = feature.properties[column] !== undefined ? parseFloat(feature.properties[column]) : 0;
+      return value;
     });
+    const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
 
     const averagePriceIndex = (values[3] / 3) || 0;
     const reverseAveragePriceIndex = 1 - (normalize(averagePriceIndex, columns[3]) || 0);
