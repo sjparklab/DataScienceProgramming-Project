@@ -27,7 +27,7 @@ app.use(express.json());
 const geojsonTownPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
 const geojsonCityPath = path.join(__dirname, 'updated_merged_data_final.geojson');
 
-const getComputedGeoJson = (geojsonData) => {
+const getComputedGeoJson = (geojsonData, statuses) => {
   const columns = [
     '2023년_계_총세대수',
     'count_transport',
@@ -65,10 +65,10 @@ const getComputedGeoJson = (geojsonData) => {
     const reverseAveragePriceIndex = 1 - (normalize(averagePriceIndex, columns[3]) || 0);
 
     const computedValue = 
-      (1 * normalizedValues[0]) +
-      (1 * normalizedValues[1]) +
-      (1 * normalizedValues[2]) +
-      (1 * reverseAveragePriceIndex);
+      (statuses[0] ? normalizedValues[0] : 0) +
+      (statuses[1] ? normalizedValues[1] : 0) +
+      (statuses[2] ? normalizedValues[2] : 0) +
+      (statuses[3] ? reverseAveragePriceIndex : 0);
 
     feature.properties.computedValue = computedValue;
     feature.properties.priceSumNormalized = normalizedValues[3];
@@ -100,8 +100,9 @@ app.get('/geojson/town', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonTownPath);
     console.log('GeoJSON Town Data:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
+    const statuses = [true, true, true, true];
 
-    geojsonData = getComputedGeoJson(geojsonData);
+    geojsonData = getComputedGeoJson(geojsonData, statuses);
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
@@ -113,8 +114,9 @@ app.get('/geojson/city', async (req, res) => {
   try {
     let geojsonData = await readGeoJsonFile(geojsonCityPath);
     console.log('GeoJSON City Data:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
+    const statuses = [true, true, true, true];
 
-    geojsonData = getComputedGeoJson(geojsonData);
+    geojsonData = getComputedGeoJson(geojsonData, statuses);
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
@@ -123,13 +125,13 @@ app.get('/geojson/city', async (req, res) => {
 });
 
 app.post('/update-geojson', async (req, res) => {
-  const { useTownData } = req.body;
+  const { statuses, useTownData } = req.body;
   const geojsonPath = useTownData ? geojsonTownPath : geojsonCityPath;
 
   try {
     let geojsonData = await readGeoJsonFile(geojsonPath);
     console.log('GeoJSON Data for Update:', JSON.stringify(geojsonData, null, 2)); // Log the data structure
-    geojsonData = getComputedGeoJson(geojsonData);
+    geojsonData = getComputedGeoJson(geojsonData, statuses);
     res.json(geojsonData);
   } catch (error) {
     console.error(error);
