@@ -4,7 +4,13 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
-const allowedOrigins = ['http://localhost:5173', 'http://sjpark-dev.com:5173', 'http://sjpark-dev.com', 'https://sjpark-dev.com', 'https://sjpark-dev.com:5173'];
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://sjpark-dev.com:5173',
+  'http://sjpark-dev.com',
+  'https://sjpark-dev.com',
+  'https://sjpark-dev.com:5173'
+];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -40,7 +46,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     return (value - min) / (max - min);
   };
 
-  const computedValues = geojsonData.features.map(feature => {
+  geojsonData.features.forEach(feature => {
     const values = columns.map(column => parseFloat(feature.properties[column]) || 0);
     const normalizedValues = values.map((value, index) => normalize(value, columns[index]));
 
@@ -55,59 +61,60 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 
     feature.properties.computedValue = computedValue;
     feature.properties.priceSumNormalized = normalizedValues[3];
-    return feature;
   });
 
-  geojsonData.features = computedValues;
   return geojsonData;
 };
 
-app.get('/geojson/town', (req, res) => {
-  fs.readFile(geojsonTownPath, 'utf8', (err, data) => {
-    if (err) {
-      res.status(500).send('GeoJSON 파일 읽기 오류');
-      return;
-    }
+const readGeoJsonFile = (filePath) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        reject('GeoJSON 파일 읽기 오류');
+      } else {
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+};
 
-    let geojsonData = JSON.parse(data);
+app.get('/geojson/town', async (req, res) => {
+  try {
+    let geojsonData = await readGeoJsonFile(geojsonTownPath);
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
-  });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-app.get('/geojson/city', (req, res) => {
-  fs.readFile(geojsonCityPath, 'utf8', (err, data) => {
-    if (err) {
-      res.status(500).send('GeoJSON 파일 읽기 오류');
-      return;
-    }
-
-    let geojsonData = JSON.parse(data);
+app.get('/geojson/city', async (req, res) => {
+  try {
+    let geojsonData = await readGeoJsonFile(geojsonCityPath);
     const weights = [1, 1, 1, 1];
     const statuses = [true, true, true, true];
 
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
-  });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
-app.post('/update-geojson', (req, res) => {
-  const { weights, statuses } = req.body;
-  const geojsonPath = req.body.useTownData ? geojsonTownPath : geojsonCityPath;
+app.post('/update-geojson', async (req, res) => {
+  const { weights, statuses, useTownData } = req.body;
+  const geojsonPath = useTownData ? geojsonTownPath : geojsonCityPath;
 
-  fs.readFile(geojsonPath, 'utf8', (err, data) => {
-    if (err) {
-      res.status(500).send('GeoJSON 파일 읽기 오류');
-      return;
-    }
-
-    let geojsonData = JSON.parse(data);
+  try {
+    let geojsonData = await readGeoJsonFile(geojsonPath);
     geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
     res.json(geojsonData);
-  });
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
 const server = app.listen(process.env.PORT || 3001, () => {
