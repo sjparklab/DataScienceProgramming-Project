@@ -23,7 +23,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const geojsonPath = path.join(__dirname, 'all_data_with_geojson_data.geojson');
+const geojsonPath = path.join(__dirname, 'updated_merged_data_final.geojson');
 
 const parseValue = (value) => {
   if (typeof value === 'string') {
