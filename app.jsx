@@ -4,7 +4,7 @@ import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { GeoJsonLayer } from 'deck.gl';
 import { MapboxOverlay as DeckOverlay } from '@deck.gl/mapbox';
 import { scaleSequential } from 'd3-scale';
-import { interpolateBlues } from 'd3-scale-chromatic';
+import { interpolateGreens } from 'd3-scale-chromatic';
 import { rgb } from 'd3-color';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './styles.css';
@@ -29,45 +29,33 @@ function DeckGLOverlay(props) {
 
 function Root() {
   const [geoJsonData, setGeoJsonData] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(INITIAL_VIEW_STATE.zoom);
-  const [extruded, setExtruded] = useState(false);
-  const [useTownData, setUseTownData] = useState(true);
+  const [weights, setWeights] = useState([1, 1, 1, 1]);
   const [statuses, setStatuses] = useState([true, true, true, true]);
+  const [useTownData, setUseTownData] = useState(true);
+
+  const fetchGeoJson = async () => {
+    try {
+      const response = await fetch(`/geojson/${useTownData ? 'town' : 'city'}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setGeoJsonData(data);
+    } catch (error) {
+      console.error('GeoJSON 데이터 가져오기 오류:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchGeoJson = async () => {
-      const url = useTownData ? '/geojson/town' : '/geojson/city';
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setGeoJsonData(data);
-      } catch (error) {
-        console.error('GeoJSON 데이터 가져오기 오류:', error);
-      }
-    };
     fetchGeoJson();
   }, [useTownData]);
-
-  useEffect(() => {
-    const handleZoom = () => {
-      if (zoomLevel >= 12 && !useTownData) {
-        setUseTownData(true);
-      } else if (zoomLevel < 12 && useTownData) {
-        setUseTownData(false);
-      }
-    };
-    handleZoom();
-  }, [zoomLevel]);
 
   const updateGeoJson = async () => {
     try {
       const response = await fetch('https://sjpark-dev.com/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ statuses })
+        body: JSON.stringify({ weights, statuses, useTownData })
       });
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -79,28 +67,36 @@ function Root() {
     }
   };
 
+  const handleZoomChange = (viewState) => {
+    if (viewState.zoom >= 10 && !useTownData) {
+      setUseTownData(true);
+    } else if (viewState.zoom < 10 && useTownData) {
+      setUseTownData(false);
+    }
+  };
+
   if (!geoJsonData) {
     return <div>로딩 중...</div>;
   }
 
-  const colorScale = scaleSequential(interpolateBlues)
+  const colorScale = scaleSequential(interpolateGreens)
     .domain([0, 100]);
 
-  const geoJsonLayer = new GeoJsonLayer({
+  const layers = new GeoJsonLayer({
     id: 'geojson-layer',
     data: geoJsonData,
     filled: true,
-    extruded: extruded,
+    extruded: true,
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
       const color = rgb(colorScale(value));
       return [color.r, color.g, color.b, 180];
     },
-    getLineColor: [255, 255, 255],
-    getLineWidth: 1,
+    getLineColor: [0, 0, 0],
     getElevation: d => (d.properties.computedValue || 0) * 50,
     pickable: true,
     visible: true,
+    wireframe: true,
     onHover: info => {
       const tooltip = document.getElementById('tooltip');
       if (info.object) {
@@ -125,81 +121,74 @@ function Root() {
   return (
     <div className="container">
       <header className="top-bar">
-        <img src="/path/to/deu_logo.png" alt="동의대학교 로고" className="logo" />
+        <img src="deu_logo.png" alt="동의대학교 로고" />
         동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
       </header>
       <aside className="side-bar">
         <div className="control-panel">
           <div className="control-box">
             <label>GeoJSON 레이어 활성화:</label>
-            <div className="toggle-button-group">
-              <button
-                className={`toggle-button ${statuses[0] ? 'active' : 'inactive'}`}
-                onClick={() => {
-                  const newStatuses = [...statuses];
-                  newStatuses[0] = true;
-                  setStatuses(newStatuses);
-                }}
-              >
-                활성화
-              </button>
-              <button
-                className={`toggle-button ${!statuses[0] ? 'active' : 'inactive'}`}
-                onClick={() => {
-                  const newStatuses = [...statuses];
-                  newStatuses[0] = false;
-                  setStatuses(newStatuses);
-                }}
-              >
-                비활성화
-              </button>
+            <div className="button-group">
+              <button className={geoJsonData ? 'active' : ''} onClick={() => setGeoJsonData(null)}>비활성화</button>
+              <button className={geoJsonData ? '' : 'active'} onClick={fetchGeoJson}>활성화</button>
             </div>
           </div>
           <div className="control-box">
-            <label>2D/3D 모드:</label>
-            <div className="toggle-button-group">
-              <button
-                className={`toggle-button ${extruded ? 'inactive' : 'active'}`}
-                onClick={() => setExtruded(false)}
-              >
-                2D 모드
-              </button>
-              <button
-                className={`toggle-button ${extruded ? 'active' : 'inactive'}`}
-                onClick={() => setExtruded(true)}
-              >
-                3D 모드
-              </button>
+            <label>총세대수 활성화:</label>
+            <div className="button-group">
+              <button className={statuses[0] ? 'active' : ''} onClick={() => setStatuses([!statuses[0], statuses[1], statuses[2], statuses[3]])}>활성화</button>
+              <button className={statuses[0] ? '' : 'active'} onClick={() => setStatuses([!statuses[0], statuses[1], statuses[2], statuses[3]])}>비활성화</button>
             </div>
           </div>
-          <button className="update-button" onClick={updateGeoJson}>
-            업데이트
-          </button>
+          <div className="control-box">
+            <label>운송수단수 활성화:</label>
+            <div className="button-group">
+              <button className={statuses[1] ? 'active' : ''} onClick={() => setStatuses([statuses[0], !statuses[1], statuses[2], statuses[3]])}>활성화</button>
+              <button className={statuses[1] ? '' : 'active'} onClick={() => setStatuses([statuses[0], !statuses[1], statuses[2], statuses[3]])}>비활성화</button>
+            </div>
+          </div>
+          <div className="control-box">
+            <label>상점수 활성화:</label>
+            <div className="button-group">
+              <button className={statuses[2] ? 'active' : ''} onClick={() => setStatuses([statuses[0], statuses[1], !statuses[2], statuses[3]])}>활성화</button>
+              <button className={statuses[2] ? '' : 'active'} onClick={() => setStatuses([statuses[0], statuses[1], !statuses[2], statuses[3]])}>비활성화</button>
+            </div>
+          </div>
+          <div className="control-box">
+            <label>평균 전월세 가격지수 활성화:</label>
+            <div className="button-group">
+              <button className={statuses[3] ? 'active' : ''} onClick={() => setStatuses([statuses[0], statuses[1], statuses[2], !statuses[3]])}>활성화</button>
+              <button className={statuses[3] ? '' : 'active'} onClick={() => setStatuses([statuses[0], statuses[1], statuses[2], !statuses[3]])}>비활성화</button>
+            </div>
+          </div>
+          <div className="control-box">
+            <label>지도 모드:</label>
+            <div className="button-group">
+              <button className={!useTownData ? 'active' : ''} onClick={() => setUseTownData(false)}>시군구</button>
+              <button className={useTownData ? 'active' : ''} onClick={() => setUseTownData(true)}>읍면동</button>
+            </div>
+          </div>
+          <div className="control-box">
+            <label>3D/2D 모드:</label>
+            <div className="button-group">
+              <button className={extruded ? 'active' : ''} onClick={() => setExtruded(true)}>3D</button>
+              <button className={!extruded ? 'active' : ''} onClick={() => setExtruded(false)}>2D</button>
+            </div>
+          </div>
+          <button className="update-button" onClick={updateGeoJson}>업데이트</button>
         </div>
       </aside>
-      <main className="map-container">
+      <main className="main-content">
         <Map
           initialViewState={INITIAL_VIEW_STATE}
           mapStyle={MAP_STYLE}
           mapboxAccessToken={MAPBOX_TOKEN}
-          onViewportChange={(viewport) => setZoomLevel(viewport.zoom)}
+          onViewportChange={handleZoomChange}
         >
-          <DeckGLOverlay layers={[geoJsonLayer]} />
+          <DeckGLOverlay layers={[layers]} />
           <NavigationControl position="top-left" />
         </Map>
-        <div
-          id="tooltip"
-          style={{
-            position: 'absolute',
-            zIndex: 1,
-            pointerEvents: 'none',
-            background: 'white',
-            padding: '5px',
-            borderRadius: '3px',
-            display: 'none',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-          }}
-        />
+        <div id="tooltip" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', display: 'none' }} />
       </main>
     </div>
   );

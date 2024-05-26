@@ -110,7 +110,8 @@ app.post('/update-geojson', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`서버가 ${PORT} 포트에서 실행 중입니다`);
+const server = app.listen(process.env.PORT || 3001, () => {
+  console.log(`서버가 ${server.address().port} 포트에서 실행 중입니다`);
 });
+
+server.timeout = 600000; // 10 minutes
