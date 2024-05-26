@@ -32,6 +32,7 @@ function Root() {
   const [weights, setWeights] = useState([1, 1, 1, 1]);
   const [statuses, setStatuses] = useState([true, true, true, true]);
   const [useTownData, setUseTownData] = useState(true);
+  const [extruded, setExtruded] = useState(true);
 
   const fetchGeoJson = async () => {
     try {
@@ -86,7 +87,7 @@ function Root() {
     id: 'geojson-layer',
     data: geoJsonData,
     filled: true,
-    extruded: true,
+    extruded: extruded,
     getFillColor: d => {
       const value = d.properties.computedValue || 0;
       const color = rgb(colorScale(value));
