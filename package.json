@@ -11,6 +11,9 @@
     "dev": "concurrently \"npm run server\" \"npm run start\""
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/material": "^5.15.18",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
     "csv-parser": "^3.0.0",
@@ -24,7 +27,7 @@
     "react-map-gl": "^7.1.0"
   },
   "devDependencies": {
-    "vite": "^4.0.0",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "vite": "^4.0.0"
   }
 }

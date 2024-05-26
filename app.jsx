@@ -9,7 +9,18 @@ import { rgb } from 'd3-color';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import './styles.css';
 
-const MAPBOX_TOKEN = process.env.MapboxAccessToken;
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+const GEOJSON_URL = import.meta.env.VITE_GEOJSON_URL;
+const UPDATE_GEOJSON_URL = import.meta.env.VITE_UPDATE_GEOJSON_URL;
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
@@ -27,6 +38,20 @@ function DeckGLOverlay(props) {
   return null;
 }
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#007bff',
+    },
+    secondary: {
+      main: '#dc3545',
+    },
+    background: {
+      default: '#f8f9fa',
+    },
+  },
+});
+
 function Root() {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [statuses, setStatuses] = useState([true, true, true, true]);
@@ -35,7 +60,7 @@ function Root() {
 
   const fetchGeoJson = useCallback(async () => {
     try {
-      const response = await fetch(process.env.REACT_APP_GEOJSON_URL);
+      const response = await fetch(GEOJSON_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -52,7 +77,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch(process.env.REACT_APP_UPDATE_GEOJSON_URL, {
+      const response = await fetch(UPDATE_GEOJSON_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ weights: [1, 1, 1, 1], statuses })
@@ -94,7 +119,6 @@ function Root() {
       const tooltip = document.getElementById('tooltip');
       if (info.object) {
         const properties = info.object.properties;
-        const pixelRatio = window.devicePixelRatio || 1;
         tooltip.style.display = 'block';
         tooltip.style.left = `${info.x}px`;
         tooltip.style.top = `${info.y}px`;
@@ -113,91 +137,113 @@ function Root() {
   });
 
   return (
-    <div className="container">
-      <header className="top-bar">
-        <img src="deu_logo.png" alt="동의대학교 로고" className="logo" />
-        동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
-      </header>
-      <div className="main-content">
-        <aside className="side-bar">
-          <div className="control-panel">
-            <div className="control-box">
-              <label>GeoJSON 레이어 활성화:</label>
-              <div className="toggle-button-group">
-                <button
-                  className={`toggle-button ${isLayerVisible ? 'active' : 'inactive'}`}
-                  onClick={() => setIsLayerVisible(true)}
-                >
-                  활성화
-                </button>
-                <button
-                  className={`toggle-button ${!isLayerVisible ? 'active' : 'inactive'}`}
-                  onClick={() => setIsLayerVisible(false)}
-                >
-                  비활성화
-                </button>
-              </div>
-            </div>
-            <div className="control-box">
-              <label>지도 모드:</label>
-              <div className="toggle-button-group">
-                <button
-                  className={`toggle-button ${is3D ? 'active' : 'inactive'}`}
-                  onClick={() => setIs3D(true)}
-                >
-                  3D 모드
-                </button>
-                <button
-                  className={`toggle-button ${!is3D ? 'active' : 'inactive'}`}
-                  onClick={() => setIs3D(false)}
-                >
-                  2D 모드
-                </button>
-              </div>
-            </div>
-            {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
-              <div className="control-box" key={index}>
-                <label>{prop} 활성화:</label>
+    <ThemeProvider theme={theme}>
+      <div className="container">
+        <AppBar position="static" color="default" style={{ background: '#ffffff' }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" aria-label="logo">
+              <img src="deu_logo.png" alt="동의대학교 로고" style={{ height: '40px' }} />
+            </IconButton>
+            <Typography variant="h6" style={{ flexGrow: 1, color: '#000000' }}>
+              동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <div className="main-content">
+          <aside className="side-bar" style={{ background: '#ffffff', borderRight: '1px solid #ddd' }}>
+            <div className="control-panel">
+              <div className="control-box">
+                <label>GeoJSON 레이어 활성화:</label>
                 <div className="toggle-button-group">
-                  <button
-                    className={`toggle-button ${statuses[index] ? 'active' : 'inactive'}`}
-                    onClick={() => {
-                      const newStatuses = [...statuses];
-                      newStatuses[index] = true;
-                      setStatuses(newStatuses);
-                    }}
+                  <Button
+                    variant={isLayerVisible ? "contained" : "outlined"}
+                    color="primary"
+                    onClick={() => setIsLayerVisible(true)}
                   >
-                      활성화
-                  </button>
-                  <button
-                    className={`toggle-button ${!statuses[index] ? 'active' : 'inactive'}`}
-                    onClick={() => {
-                      const newStatuses = [...statuses];
-                      newStatuses[index] = false;
-                      setStatuses(newStatuses);
-                    }}
+                    활성화
+                  </Button>
+                  <Button
+                    variant={!isLayerVisible ? "contained" : "outlined"}
+                    color="secondary"
+                    onClick={() => setIsLayerVisible(false)}
                   >
-                      비활성화
-                  </button>
+                    비활성화
+                  </Button>
                 </div>
               </div>
-            ))}
-            <button className="update-button" onClick={updateGeoJson}>업데이트</button>
-          </div>
-        </aside>
-        <main className="map-container">
-          <Map
-            initialViewState={INITIAL_VIEW_STATE}
-            mapStyle={MAP_STYLE}
-            mapboxAccessToken={MAPBOX_TOKEN}
-          >
-            <DeckGLOverlay layers={[geoJsonLayer]} />
-            <NavigationControl position="top-left" />
-          </Map>
-          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', display: 'none' }} />
-        </main>
+              <div className="control-box">
+                <label>지도 모드:</label>
+                <div className="toggle-button-group">
+                  <Button
+                    variant={is3D ? "contained" : "outlined"}
+                    color="primary"
+                    onClick={() => setIs3D(true)}
+                  >
+                    3D 모드
+                  </Button>
+                  <Button
+                    variant={!is3D ? "contained" : "outlined"}
+                    color="secondary"
+                    onClick={() => setIs3D(false)}
+                  >
+                    2D 모드
+                  </Button>
+                </div>
+              </div>
+              {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
+                <div className="control-box" key={index}>
+                  <label>{prop} 활성화:</label>
+                  <div className="toggle-button-group">
+                    <Button
+                      variant={statuses[index] ? "contained" : "outlined"}
+                      color="primary"
+                      onClick={() => {
+                        const newStatuses = [...statuses];
+                        newStatuses[index] = true;
+                        setStatuses(newStatuses);
+                      }}
+                    >
+                      활성화
+                    </Button>
+                    <Button
+                      variant={!statuses[index] ? "contained" : "outlined"}
+                      color="secondary"
+                      onClick={() => {
+                        const newStatuses = [...statuses];
+                        newStatuses[index] = false;
+                        setStatuses(newStatuses);
+                      }}
+                    >
+                      비활성화
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button
+                variant="contained"
+                color="primary"
+                className="update-button"
+                onClick={updateGeoJson}
+                style={{ marginTop: '20px' }}
+              >
+                업데이트
+              </Button>
+            </div>
+          </aside>
+          <main className="map-container">
+            <Map
+              initialViewState={INITIAL_VIEW_STATE}
+              mapStyle={MAP_STYLE}
+              mapboxAccessToken={MAPBOX_TOKEN}
+            >
+              <DeckGLOverlay layers={[geoJsonLayer]} />
+              <NavigationControl position="top-left" />
+            </Map>
+            <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'rgba(0, 0, 0, 0.8)', padding: '10px', borderRadius: '3px', color: 'white', display: 'none', fontSize: '14px', maxWidth: '300px', lineHeight: '1.5' }} />
+          </main>
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
