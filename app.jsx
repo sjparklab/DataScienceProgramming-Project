@@ -18,7 +18,7 @@ import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-const UPDATE_GEOJSON_URL = 'http://localhost:3001/update-geojson';  // API URL 수정
+const UPDATE_GEOJSON_URL = 'https://sjpark-dev.com/update-geojson';  // API URL 수정
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
@@ -62,7 +62,7 @@ function Root() {
 
   const fetchGeoJson = useCallback(async (type) => {
     try {
-      const response = await fetch(`http://localhost:3001/geojson/${type}`);
+      const response = await fetch(`https://sjpark-dev.com/geojson/${type}`);
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
