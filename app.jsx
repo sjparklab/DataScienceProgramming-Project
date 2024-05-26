@@ -52,7 +52,7 @@ function Root() {
 
   const updateGeoJson = async () => {
     try {
-      const response = await fetch('https://sjpark-dev.com/update-geojson', {
+      const response = await fetch('/update-geojson', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ statuses, useTownData })
@@ -188,7 +188,7 @@ function Root() {
           <DeckGLOverlay layers={[layers]} />
           <NavigationControl position="top-left" />
         </Map>
-        <div id="tooltip" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', display: 'none' }} />
+        <div id="tooltip" style={{ position: 'absolute', zIndex: 1, pointerEvents: 'none', background: 'white', padding: '5px', borderRadius: '3px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)', display: 'none' }} />
       </main>
     </div>
   );
