@@ -1,108 +1,112 @@
 body {
-    margin: 0;
-    font-family: 'Nanum Gothic', sans-serif;
-    font-weight: 700; /* 폰트를 두껍게 설정 */
-  }
-  
-  .container {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  
-  .top-bar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f8f9fa; /* 아주 옅은 그레이/화이트 */
-    color: #212529; /* 다크 그레이 */
-    height: 54px;
-    padding: 0 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    font-size: 18px; /* 상단바 폰트 크기 조정 */
-  }
-  
-  .top-bar .logo {
-    height: 40px;
-    margin-right: 10px;
-  }
-  
-  .main-content {
-    display: flex;
-    flex: 1;
-  }
-  
-  .side-bar {
-    width: 360px;
-    background-color: #e9ecef; /* 아주 옅은 그레이 */
-    padding: 20px;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-  }
-  
-  .control-panel {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .control-box {
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #ffffff; /* 화이트 */
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 16px; /* 사이드바 폰트 크기 조정 */
-  }
-  
-  .control-box label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .toggle-button-group {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .toggle-button {
-    flex: 1;
-    padding: 10px 20px;
-    margin: 0 5px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px; /* 토글 버튼 폰트 크기 조정 */
-    transition: background-color 0.3s ease;
-  }
-  
-  .toggle-button.active {
-    background-color: #28a745;
-  }
-  
-  .toggle-button.inactive {
-    background-color: #dc3545;
-  }
-  
-  .update-button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px; /* 업데이트 버튼 폰트 크기 조정 */
-    transition: background-color 0.3s ease;
-  }
-  
-  .update-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .map-container {
-    flex: 1;
-    position: relative;
-  }
-  
+  margin: 0;
+  font-family: 'Nanum Gothic', sans-serif;
+  font-weight: 700; /* 폰트를 두껍게 설정 */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa; /* 아주 옅은 그레이/화이트 */
+  color: #212529; /* 다크 그레이 */
+  height: 54px;
+  padding: 0 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 18px; /* 상단바 폰트 크기 조정 */
+}
+
+.top-bar .logo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.main-content {
+  display: flex;
+  flex: 1;
+}
+
+.side-bar {
+  width: 360px;
+  background-color: #e9ecef; /* 아주 옅은 그레이 */
+  padding: 20px;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.control-box {
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #ffffff; /* 화이트 */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  font-size: 16px; /* 사이드바 폰트 크기 조정 */
+}
+
+.control-box label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.toggle-button-group {
+  display: flex;
+  justify-content: space-between;
+  background-color: #e0e0e0;
+  border-radius: 25px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.toggle-button {
+  flex: 1;
+  padding: 10px 20px;
+  margin: 0;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  cursor: pointer;
+  font-size: 16px; /* 토글 버튼 폰트 크기 조정 */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.toggle-button.active {
+  background-color: #20c997;
+  color: white;
+}
+
+.toggle-button.inactive {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.update-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px; /* 업데이트 버튼 폰트 크기 조정 */
+  transition: background-color 0.3s ease;
+}
+
+.update-button:hover {
+  background-color: #0056b3;
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+}
