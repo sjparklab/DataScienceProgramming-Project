@@ -77,7 +77,6 @@ html, body, #root {
   
   .update-button:hover {
     background-color: #0056b3;
-<<<<<<< HEAD
   }
   
   .map-container {
@@ -96,6 +95,3 @@ html, body, #root {
     display: none;
   }
   
-=======
-  }
->>>>>>> parent of 5ad5305 (top-bar settings-1)
