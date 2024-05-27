@@ -21,7 +21,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 const GEOJSON_URL = import.meta.env.VITE_GEOJSON_URL;
-const UPDATE_GEOJSON_URL = 'http://localhost:3001/update-geojson';
+const UPDATE_GEOJSON_URL = import.meta.env.VITE_UPDATE_GEOJSON_URL;
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
