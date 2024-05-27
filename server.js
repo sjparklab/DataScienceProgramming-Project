@@ -32,14 +32,14 @@ const parseValue = (value) => {
 
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
-    '2023년_계_총세대수', 'count_transport', 'sum_all_shop', 
+    '2023년_계_총세대수', 'count_transport', 'sum_all_shop',
     'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
 
   geojsonData.features.forEach(feature => {
     const priceSum = parseValue(feature.properties['montly-avg_mean']) +
-                     parseValue(feature.properties['dep-avg_rent_mean']) +
-                     parseValue(feature.properties['dep-avg_deposit_mean']);
+      parseValue(feature.properties['dep-avg_rent_mean']) +
+      parseValue(feature.properties['dep-avg_deposit_mean']);
     feature.properties.priceSum = priceSum;
   });
 
@@ -85,7 +85,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 
 app.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'dong_final_data.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'transport_updated_geojson_file.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
@@ -114,7 +114,7 @@ app.get('/geojson/:type', (req, res) => {
 app.post('/update-geojson/:type', (req, res) => {
   const { type } = req.params;
   const { weights, statuses } = req.body;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'dong_final_data.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'transport_updated_geojson_file.geojson');
 
   console.log('받은 가중치:', weights);
   console.log('받은 상태:', statuses);
