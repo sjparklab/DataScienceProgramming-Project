@@ -147,6 +147,39 @@ app.post('/update-geojson/:type', (req, res) => {
   });
 });
 
+app.post('/recommend', (req, res) => {
+  const { preferences } = req.body;
+
+  const geojsonPath = path.join(__dirname, 'sigungu_final_data.geojson');
+  fs.readFile(geojsonPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err);
+      res.status(500).send('GeoJSON 파일 읽기 오류');
+      return;
+    }
+
+    let geojsonData;
+    try {
+      geojsonData = JSON.parse(data);
+    } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError);
+      res.status(500).send('GeoJSON 파싱 오류');
+      return;
+    }
+
+    const weights = preferences.weights || [1, 1, 1, 1];
+    const statuses = preferences.statuses || [true, true, true, true];
+
+    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
+
+    const recommendedFeature = geojsonData.features.reduce((prev, curr) => {
+      return (prev.properties.computedValue > curr.properties.computedValue) ? prev : curr;
+    });
+
+    res.json(recommendedFeature);
+  });
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`서버가 ${PORT} 포트에서 실행 중입니다`);

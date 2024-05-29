@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Map, NavigationControl, useControl } from 'react-map-gl';
 import { GeoJsonLayer } from 'deck.gl';
 import { MapboxOverlay as DeckOverlay } from '@deck.gl/mapbox';
@@ -56,7 +57,47 @@ const theme = createTheme({
   },
 });
 
-function Root() {
+function HomePage() {
+  return (
+    <Box p={2}>
+      <Typography variant="h4" gutterBottom>
+        블로그 형식의 데이터 시각화 페이지
+      </Typography>
+      {/* 여기에 블로그 형식의 데이터를 시각화하는 컴포넌트를 추가 */}
+    </Box>
+  );
+}
+
+function SignUpPage() {
+  const [preferences, setPreferences] = useState({ weights: [1, 1, 1, 1], statuses: [true, true, true, true] });
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const response = await fetch('/recommend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ preferences })
+    });
+    const data = await response.json();
+    console.log('추천 지역:', data);
+  };
+
+  return (
+    <Box p={2}>
+      <Typography variant="h4" gutterBottom>
+        회원가입
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        {/* 여기에 회원가입 폼을 추가 */}
+        <Button type="submit" variant="contained" color="primary">
+          추천 지역 받기
+        </Button>
+      </form>
+    </Box>
+  );
+}
+
+function MapPage() {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [statuses, setStatuses] = useState([true, true, true, true]);
   const [isLayerVisible, setIsLayerVisible] = useState(true);
@@ -157,139 +198,154 @@ function Root() {
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <div className="container">
-        <AppBar position="fixed" color="default" style={{ background: '#ffffff' }}>
-          <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
-              <MenuIcon />
-            </IconButton>
-            <IconButton edge="start" color="inherit" aria-label="logo" style={{ marginLeft: '10px' }}>
-              <img src="deu_logo.png" alt="동의대학교 로고" style={{ height: '40px' }} />
-            </IconButton>
-            <Typography variant="h6" style={{ flexGrow: 1, color: '#000000', fontWeight: 'bold' }}>
-              동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <div className="main-content" style={{ marginTop: '64px' }}>
-          <Drawer
-            variant="persistent"
-            anchor="left"
-            open={isDrawerOpen}
-            PaperProps={{
-              style: {
-                width: 360,  // 사이드바의 총 너비를 설정
-                borderTopRightRadius: 16,
-                borderBottomRightRadius: 16,
-                boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
-                padding: '10px',  // 사이드바의 내부 패딩 설정
-                marginTop: '64px'
-              }
-            }}
-          >
-            <div className="control-panel">
-              <div className="control-box">
-                <Typography className="sidebar-title">레이어 설정</Typography>
+    <div className="container">
+      <AppBar position="fixed" color="default" style={{ background: '#ffffff' }}>
+        <Toolbar>
+          <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer}>
+            <MenuIcon />
+          </IconButton>
+          <IconButton edge="start" color="inherit" aria-label="logo" style={{ marginLeft: '10px' }}>
+            <img src="deu_logo.png" alt="동의대학교 로고" style={{ height: '40px' }} />
+          </IconButton>
+          <Typography variant="h6" style={{ flexGrow: 1, color: '#000000', fontWeight: 'bold' }}>
+            동의대학교 컴퓨터공학과 데이터과학프로그래밍 4조
+          </Typography>
+          <Button color="inherit" component={Link} to="/">Home</Button>
+          <Button color="inherit" component={Link} to="/signup">Sign Up</Button>
+          <Button color="inherit" component={Link} to="/map">Map</Button>
+        </Toolbar>
+      </AppBar>
+      <div className="main-content" style={{ marginTop: '64px' }}>
+        <Drawer
+          variant="persistent"
+          anchor="left"
+          open={isDrawerOpen}
+          PaperProps={{
+            style: {
+              width: 360,
+              borderTopRightRadius: 16,
+              borderBottomRightRadius: 16,
+              boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
+              padding: '10px',
+              marginTop: '64px'
+            }
+          }}
+        >
+          <div className="control-panel">
+            <div className="control-box">
+              <Typography className="sidebar-title">레이어 설정</Typography>
+              <div className="toggle-button-group">
+                <Button
+                  variant={isLayerVisible ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setIsLayerVisible(true)}
+                  className="toggle-button"
+                >
+                  활성화
+                </Button>
+                <Button
+                  variant={!isLayerVisible ? "contained" : "outlined"}
+                  color="secondary"
+                  onClick={() => setIsLayerVisible(false)}
+                  className="toggle-button"
+                >
+                  비활성화
+                </Button>
+              </div>
+            </div>
+            <div className="control-box">
+              <Typography className="sidebar-title">화면모드 설정</Typography>
+              <div className="toggle-button-group">
+                <Button
+                  variant={is3D ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setIs3D(true)}
+                  className="toggle-button"
+                >
+                  3D 모드
+                </Button>
+                <Button
+                  variant={!is3D ? "contained" : "outlined"}
+                  color="secondary"
+                  onClick={() => setIs3D(false)}
+                  className="toggle-button"
+                >
+                  2D 모드
+                </Button>
+              </div>
+            </div>
+            <div className="control-box">
+              <Typography className="sidebar-title">데이터 파일 선택</Typography>
+              <div className="toggle-button-group">
+                <Button
+                  variant={selectedData === 'sigungu' ? "contained" : "outlined"}
+                  color="primary"
+                  onClick={() => setSelectedData('sigungu')}
+                  className="toggle-button"
+                >
+                  시군구
+                </Button>
+                <Button
+                  variant={selectedData === 'dong' ? "contained" : "outlined"}
+                  color="secondary"
+                  onClick={() => setSelectedData('dong')}
+                  className="toggle-button"
+                >
+                  읍면동
+                </Button>
+              </div>
+            </div>
+            {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
+              <div className="control-box" key={index}>
+                <Typography className="sidebar-label">{prop}</Typography>
                 <div className="toggle-button-group">
                   <Button
-                    variant={isLayerVisible ? "contained" : "outlined"}
+                    variant={statuses[index] ? "contained" : "outlined"}
                     color="primary"
-                    onClick={() => setIsLayerVisible(true)}
+                    onClick={() => handleStatusChange(index, true)}
                     className="toggle-button"
                   >
                     활성화
                   </Button>
                   <Button
-                    variant={!isLayerVisible ? "contained" : "outlined"}
+                    variant={!statuses[index] ? "contained" : "outlined"}
                     color="secondary"
-                    onClick={() => setIsLayerVisible(false)}
+                    onClick={() => handleStatusChange(index, false)}
                     className="toggle-button"
                   >
                     비활성화
                   </Button>
                 </div>
               </div>
-              <div className="control-box">
-                <Typography className="sidebar-title">화면모드 설정</Typography>
-                <div className="toggle-button-group">
-                  <Button
-                    variant={is3D ? "contained" : "outlined"}
-                    color="primary"
-                    onClick={() => setIs3D(true)}
-                    className="toggle-button"
-                  >
-                    3D 모드
-                  </Button>
-                  <Button
-                    variant={!is3D ? "contained" : "outlined"}
-                    color="secondary"
-                    onClick={() => setIs3D(false)}
-                    className="toggle-button"
-                  >
-                    2D 모드
-                  </Button>
-                </div>
-              </div>
-              <div className="control-box">
-                <Typography className="sidebar-title">데이터 파일 선택</Typography>
-                <div className="toggle-button-group">
-                  <Button
-                    variant={selectedData === 'sigungu' ? "contained" : "outlined"}
-                    color="primary"
-                    onClick={() => setSelectedData('sigungu')}
-                    className="toggle-button"
-                  >
-                    시군구
-                  </Button>
-                  <Button
-                    variant={selectedData === 'dong' ? "contained" : "outlined"}
-                    color="secondary"
-                    onClick={() => setSelectedData('dong')}
-                    className="toggle-button"
-                  >
-                    읍면동
-                  </Button>
-                </div>
-              </div>
-              {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
-                <div className="control-box" key={index}>
-                  <Typography className="sidebar-label">{prop}</Typography>
-                  <div className="toggle-button-group">
-                    <Button
-                      variant={statuses[index] ? "contained" : "outlined"}
-                      color="primary"
-                      onClick={() => handleStatusChange(index, true)}
-                      className="toggle-button"
-                    >
-                      활성화
-                    </Button>
-                    <Button
-                      variant={!statuses[index] ? "contained" : "outlined"}
-                      color="secondary"
-                      onClick={() => handleStatusChange(index, false)}
-                      className="toggle-button"
-                    >
-                      비활성화
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Drawer>
-          <main className="map-container" style={{ marginLeft: isDrawerOpen ? '360px' : '0', transition: 'margin-left 0.3s' }}>
-            <Map
-              initialViewState={INITIAL_VIEW_STATE}
-              mapStyle={MAP_STYLE}
-              mapboxAccessToken={MAPBOX_TOKEN}
-            >
-              <DeckGLOverlay layers={[geoJsonLayer]} />
-              <NavigationControl position="top-left" />
-            </Map>
-            <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'rgba(0, 0, 0, 0.8)', padding: '10px', borderRadius: '3px', color: 'white', display: 'none', fontSize: '14px', maxWidth: '300px', lineHeight: '1.5' }} />
-          </main>
-        </div>
+            ))}
+          </div>
+        </Drawer>
+        <main className="map-container" style={{ marginLeft: isDrawerOpen ? '360px' : '0', transition: 'margin-left 0.3s' }}>
+          <Map
+            initialViewState={INITIAL_VIEW_STATE}
+            mapStyle={MAP_STYLE}
+            mapboxAccessToken={MAPBOX_TOKEN}
+          >
+            <DeckGLOverlay layers={[geoJsonLayer]} />
+            <NavigationControl position="top-left" />
+          </Map>
+          <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'rgba(0, 0, 0, 0.8)', padding: '10px', borderRadius: '3px', color: 'white', display: 'none', fontSize: '14px', maxWidth: '300px', lineHeight: '1.5' }} />
+        </main>
       </div>
+    </div>
+  );
+}
+
+function Root() {
+  return (
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/map" element={<MapPage />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }
