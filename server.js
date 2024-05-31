@@ -2,6 +2,8 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+const turf = require('@turf/turf');
 const dotenv = require('dotenv');
 dotenv.config();
 
@@ -169,6 +171,31 @@ app.post('/api/recommend', (req, res) => {
 
   // 클라이언트로 응답 전송
   res.json({ recommendedArea });
+});
+
+app.post('/calculate-distances', (req, res) => {
+  const { latitude, longitude, maxDistance } = req.body;
+  const geojson = JSON.parse(fs.readFileSync('transport_updated_geojson_file.geojson'));
+
+
+  if (!latitude || !longitude || maxDistance === undefined) {
+    return res.status(400).send({ error: 'Latitude, Longitude, and maxDistance are required.' });
+  }
+
+  const userPoint = turf.point([longitude, latitude]);
+
+  const results = geojson.features.map(feature => {
+    const centroid = turf.centroid(feature);
+    const distance = turf.distance(userPoint, centroid, { units: 'kilometers' });
+
+    return {
+      feature: feature.properties,
+      centroid: centroid.geometry.coordinates,
+      distance: distance
+    };
+  }).filter(result => result.distance <= maxDistance);
+
+  res.send(results);
 });
 
 

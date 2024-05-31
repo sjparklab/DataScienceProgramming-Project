@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Checkbox, Paper, Slider, Typography, Box, MenuItem, Select, InputLabel } from '@mui/material';
-import axios from 'axios';
+import { TextField, Button, Paper, Slider, Typography, Box, MenuItem, Select, InputLabel, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/system';
+
+// JSON 데이터를 import 합니다.
+import locationsData from './locations_data.json'; // locations_data.json 파일을 동일한 디렉토리에 위치시킵니다.
 
 const RECOMMENDED_URL = import.meta.env.VITE_RECOMMENDED_URL;
 
@@ -10,12 +12,12 @@ const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  backgroundColor: '#f0f4f8', // 외부 배경색
+  backgroundColor: '#f0f4f8',
 });
 
 const StyledPaper = styled(Paper)({
   padding: '16px',
-  backgroundColor: '#ffffff', // 내부 박스 배경색
+  backgroundColor: '#ffffff',
   boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.16)',
 });
 
@@ -29,11 +31,19 @@ const SubmitButton = styled(Button)({
   marginTop: '16px',
 });
 
+const FormRow = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  gap: '16px',
+});
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
     gender: '',
-    currentWorkplace: '',
+    currentWorkplaceSido: '',
+    currentWorkplaceSigungu: '',
+    currentWorkplaceEupmyeondong: '',
     commercialScale: 5,
     rentPrice: 5,
     transportation: 5,
@@ -47,6 +57,8 @@ function App() {
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
+      ...(name === 'currentWorkplaceSido' && { currentWorkplaceSigungu: '', currentWorkplaceEupmyeondong: '' }),
+      ...(name === 'currentWorkplaceSigungu' && { currentWorkplaceEupmyeondong: '' }),
     });
   };
 
@@ -67,20 +79,68 @@ function App() {
     }
   };
 
+  const { currentWorkplaceSido, currentWorkplaceSigungu } = formData;
+  const sigungus = currentWorkplaceSido ? locationsData[currentWorkplaceSido].sigungus : [];
+  const eupmyeondongs = currentWorkplaceSigungu ? locationsData[currentWorkplaceSido].eupmyeondongs[currentWorkplaceSigungu] : [];
+
   return (
     <Root>
       <StyledPaper>
         <h1>지역 추천을 위해 정보를 입력해주세요</h1>
         <Form onSubmit={handleSubmit}>
           <TextField label="이름" name="name" fullWidth required onChange={handleChange} />
-          <FormControl component="fieldset">
-            <FormLabel component="legend">성별</FormLabel>
-            <RadioGroup row name="gender" onChange={handleChange}>
-              <FormControlLabel value="female" control={<Radio />} label="여성" />
-              <FormControlLabel value="male" control={<Radio />} label="남성" />
-            </RadioGroup>
-          </FormControl>
-          <TextField label="현재 직장(학교)" name="currentWorkplace" fullWidth required onChange={handleChange} />
+
+          <FormRow>
+            <FormControl fullWidth>
+              <InputLabel id="current-workplace-sido-label">현재 직장(시도)</InputLabel>
+              <Select
+                labelId="current-workplace-sido-label"
+                id="current-workplace-sido"
+                name="currentWorkplaceSido"
+                value={formData.currentWorkplaceSido}
+                onChange={handleChange}
+                label="현재 직장(시도)"
+              >
+                {Object.keys(locationsData).map((sido, index) => (
+                  <MenuItem key={index} value={sido}>{sido}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel id="current-workplace-sigungu-label">현재 직장(시군구)</InputLabel>
+              <Select
+                labelId="current-workplace-sigungu-label"
+                id="current-workplace-sigungu"
+                name="currentWorkplaceSigungu"
+                value={formData.currentWorkplaceSigungu}
+                onChange={handleChange}
+                disabled={!currentWorkplaceSido}
+                label="현재 직장(시군구)"
+              >
+                {sigungus.map((sigungu, index) => (
+                  <MenuItem key={index} value={sigungu}>{sigungu}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel id="current-workplace-eupmyeondong-label">현재 직장(읍면동)</InputLabel>
+              <Select
+                labelId="current-workplace-eupmyeondong-label"
+                id="current-workplace-eupmyeondong"
+                name="currentWorkplaceEupmyeondong"
+                value={formData.currentWorkplaceEupmyeondong}
+                onChange={handleChange}
+                disabled={!currentWorkplaceSigungu}
+                label="현재 직장(읍면동)"
+              >
+                {eupmyeondongs.map((eupmyeondong, index) => (
+                  <MenuItem key={index} value={eupmyeondong}>{eupmyeondong}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </FormRow>
 
           <Box>
             <Typography gutterBottom>상업규모</Typography>
