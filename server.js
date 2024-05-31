@@ -147,37 +147,28 @@ app.post('/update-geojson/:type', (req, res) => {
   });
 });
 
-app.post('/recommend', (req, res) => {
-  const { preferences } = req.body;
+app.post('/api/recommend', (req, res) => {
+  const {
+    name,
+    gender,
+    currentWorkplace,
+    commercialScale,
+    rentPrice,
+    transportation,
+    singleHousehold,
+    maxDistance,
+  } = req.body;
 
-  const geojsonPath = path.join(__dirname, 'sigungu_final_data.geojson');
-  fs.readFile(geojsonPath, 'utf8', (err, data) => {
-    if (err) {
-      console.error('GeoJSON 파일 읽기 오류:', err);
-      res.status(500).send('GeoJSON 파일 읽기 오류');
-      return;
-    }
+  console.log('Received data:', req.body);
 
-    let geojsonData;
-    try {
-      geojsonData = JSON.parse(data);
-    } catch (parseError) {
-      console.error('GeoJSON 파싱 오류:', parseError);
-      res.status(500).send('GeoJSON 파싱 오류');
-      return;
-    }
+  // 추천 로직 구현 (예: 임의의 추천 지역 반환)
+  const recommendedArea = {
+    name: '추천 지역',
+    reason: '입력한 선호도에 기반한 추천 지역입니다.',
+  };
 
-    const weights = preferences.weights || [1, 1, 1, 1];
-    const statuses = preferences.statuses || [true, true, true, true];
-
-    geojsonData = getComputedGeoJson(geojsonData, weights, statuses);
-
-    const recommendedFeature = geojsonData.features.reduce((prev, curr) => {
-      return (prev.properties.computedValue > curr.properties.computedValue) ? prev : curr;
-    });
-
-    res.json(recommendedFeature);
-  });
+  // 클라이언트로 응답 전송
+  res.json({ recommendedArea });
 });
 
 

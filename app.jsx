@@ -16,7 +16,8 @@ import './styles.css';
 
 const theme = createTheme({
   typography: {
-    fontFamily: 'Roboto, sans-serif',
+    fontFamily: 'Nanum Gothic, sans-serif',
+    fontWeight: 700,
   },
   palette: {
     primary: {
