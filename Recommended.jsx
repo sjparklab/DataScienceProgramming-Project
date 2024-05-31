@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Paper, Slider, Typography, Box, MenuItem, Select, InputLabel, FormControl, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/system';
+import axios from 'axios';
 
 // JSON 데이터를 import 합니다.
 import locationsData from './locations_data.json'; // locations_data.json 파일을 동일한 디렉토리에 위치시킵니다.
