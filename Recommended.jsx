@@ -3,8 +3,10 @@ import { Container, TextField, Button, Radio, RadioGroup, FormControlLabel, Form
 import axios from 'axios';
 import { styled } from '@mui/system';
 
+const RECOMMENDED_URL = import.meta.env.VITE_RECOMMENDED_URL;
+
 const Root = styled('div')({
-  minHeight: '100vh',
+  minHeight: 'calc(100vh - 64px)',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -58,7 +60,7 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/recommend', formData);
+      const response = await axios.post(`${RECOMMENDED_URL}`, formData);
       console.log('Recommended Area:', response.data);
     } catch (error) {
       console.error('There was an error!', error);
@@ -79,7 +81,7 @@ function App() {
             </RadioGroup>
           </FormControl>
           <TextField label="현재 직장(학교)" name="currentWorkplace" fullWidth required onChange={handleChange} />
-          
+
           <Box>
             <Typography gutterBottom>상업규모</Typography>
             <Slider
@@ -159,7 +161,7 @@ function App() {
               <MenuItem value={50}>50km</MenuItem>
             </Select>
           </FormControl>
-          
+
           <FormControlLabel control={<Checkbox name="agreeTerms" onChange={handleChange} />} label="이용약관 및 개인정보 수집 동의" />
           <SubmitButton type="submit" variant="contained" color="primary">추천받기</SubmitButton>
         </Form>
