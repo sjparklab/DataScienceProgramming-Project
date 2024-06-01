@@ -105,8 +105,6 @@ function App() {
       <StyledPaper>
         <h1>지역 추천을 위해 정보를 입력해주세요</h1>
         <Form onSubmit={handleSubmit}>
-          <TextField label="이름" name="name" fullWidth required onChange={handleChange} />
-
           <FormRow>
             <FormControl fullWidth>
               <InputLabel id="current-workplace-sido-label">현재 직장(시도)</InputLabel>
