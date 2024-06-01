@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { TextField, Button, Paper, Slider, Typography, Box, MenuItem, Select, InputLabel, FormControl, FormControlLabel, Checkbox } from '@mui/material';
+import { TextField, Button, Paper, Slider, Typography, Box, MenuItem, Select, InputLabel, FormControl, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/system';
 import axios from 'axios';
 
@@ -38,10 +39,13 @@ const FormRow = styled('div')({
   gap: '16px',
 });
 
+const ResultContainer = styled('div')({
+  marginTop: '24px',
+});
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
-    gender: '',
     currentWorkplaceSido: '',
     currentWorkplaceSigungu: '',
     currentWorkplaceEupmyeondong: '',
@@ -50,8 +54,9 @@ function App() {
     transportation: 5,
     singleHousehold: 5,
     maxDistance: 3,
-    agreeTerms: false,
   });
+
+  const [recommendedAreas, setRecommendedAreas] = useState(null);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -74,7 +79,8 @@ function App() {
     e.preventDefault();
     try {
       const response = await axios.post(`${RECOMMENDED_URL}`, formData);
-      console.log('Recommended Area:', response.data);
+      const sortedAreas = response.data.sort((a, b) => b.properties.computedValue - a.properties.computedValue);
+      setRecommendedAreas(sortedAreas);
     } catch (error) {
       console.error('There was an error!', error);
     }
@@ -83,6 +89,16 @@ function App() {
   const { currentWorkplaceSido, currentWorkplaceSigungu } = formData;
   const sigungus = currentWorkplaceSido ? locationsData[currentWorkplaceSido].sigungus : [];
   const eupmyeondongs = currentWorkplaceSigungu ? locationsData[currentWorkplaceSido].eupmyeondongs[currentWorkplaceSigungu] : [];
+
+  const filterProperties = (properties) => {
+    const excludedKeys = ['ADM_NM', 'ADM_CD', 'BASE_DATE', 'centroid', 'priceSumNormalized', 'region_code'];
+    return Object.keys(properties)
+      .filter(key => !excludedKeys.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = properties[key];
+        return obj;
+      }, {});
+  };
 
   return (
     <Root>
@@ -223,9 +239,40 @@ function App() {
             </Select>
           </FormControl>
 
-          <FormControlLabel control={<Checkbox name="agreeTerms" onChange={handleChange} />} label="이용약관 및 개인정보 수집 동의" />
           <SubmitButton type="submit" variant="contained" color="primary">추천받기</SubmitButton>
         </Form>
+
+        {recommendedAreas && (
+          <ResultContainer>
+            <h2>추천된 지역:</h2>
+            {recommendedAreas.length > 0 && (
+              <Paper style={{ padding: '16px', marginBottom: '16px' }}>
+                <Typography variant="h6">{recommendedAreas[0].properties.행정구역_x}</Typography>
+                {Object.entries(filterProperties(recommendedAreas[0].properties)).map(([key, value]) => (
+                  <Typography key={key}>{`${key}: ${value}`}</Typography>
+                ))}
+              </Paper>
+            )}
+
+            {recommendedAreas.length > 1 && (
+              <Accordion defaultExpanded={false}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                  <Typography>기타지역</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {recommendedAreas.slice(1).map((area, index) => (
+                    <Paper key={index} style={{ padding: '16px', marginBottom: '16px' }}>
+                      <Typography variant="h6">{area.properties.행정구역_x}</Typography>
+                      {Object.entries(filterProperties(area.properties)).map(([key, value]) => (
+                        <Typography key={key}>{`${key}: ${value}`}</Typography>
+                      ))}
+                    </Paper>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            )}
+          </ResultContainer>
+        )}
       </StyledPaper>
     </Root>
   );

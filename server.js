@@ -85,6 +85,21 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
   return geojsonData;
 };
 
+const getCentroids = (geojsonData) => {
+  return geojsonData.features.map(feature => {
+    const centroid = turf.centroid(feature);
+    feature.properties.centroid = centroid.geometry.coordinates;
+    return feature;
+  });
+};
+
+const getDistance = (coord1, coord2) => {
+  const from = turf.point(coord1);
+  const to = turf.point(coord2);
+  const distance = turf.distance(from, to, { units: 'kilometers' });
+  return distance;
+};
+
 app.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
   const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'sigungu_final_data.geojson' : 'transport_updated_geojson_file.geojson');
@@ -152,8 +167,9 @@ app.post('/update-geojson/:type', (req, res) => {
 app.post('/api/recommend', (req, res) => {
   const {
     name,
-    gender,
-    currentWorkplace,
+    currentWorkplaceSido,
+    currentWorkplaceSigungu,
+    currentWorkplaceEupmyeondong,
     commercialScale,
     rentPrice,
     transportation,
@@ -163,41 +179,59 @@ app.post('/api/recommend', (req, res) => {
 
   console.log('Received data:', req.body);
 
-  // 추천 로직 구현 (예: 임의의 추천 지역 반환)
-  const recommendedArea = {
-    name: '추천 지역',
-    reason: '입력한 선호도에 기반한 추천 지역입니다.',
-  };
+  const geojsonPath = path.join(__dirname, 'transport_updated_geojson_file.geojson');
 
-  // 클라이언트로 응답 전송
-  res.json({ recommendedArea });
+  fs.readFile(geojsonPath, 'utf8', (err, data) => {
+    if (err) {
+      console.error('GeoJSON 파일 읽기 오류:', err);
+      res.status(500).send('GeoJSON 파일 읽기 오류');
+      return;
+    }
+
+    let geojsonData;
+    try {
+      geojsonData = JSON.parse(data);
+    } catch (parseError) {
+      console.error('GeoJSON 파싱 오류:', parseError);
+      res.status(500).send('GeoJSON 파싱 오류');
+      return;
+    }
+
+    // 중심점 계산
+    const featuresWithCentroids = getCentroids(geojsonData);
+
+    // 현재 직장의 행정구역 합치기
+    const workplaceRegion = `${currentWorkplaceSido} ${currentWorkplaceSigungu} ${currentWorkplaceEupmyeondong}`;
+
+    // 현재 직장의 중심점 찾기
+    const workplaceFeature = featuresWithCentroids.find(
+      feature => feature.properties.행정구역_x === workplaceRegion
+    );
+
+    if (!workplaceFeature) {
+      res.status(404).send('직장의 행정구역을 찾을 수 없습니다.');
+      return;
+    }
+
+    const workplaceCentroid = workplaceFeature.properties.centroid;
+
+    // 거리 계산하여 maxDistance 안쪽의 지역만 반환
+    const nearbyFeatures = featuresWithCentroids.filter(feature => {
+      const featureCentroid = feature.properties.centroid;
+      const distance = getDistance(workplaceCentroid, featureCentroid);
+      feature.properties.distance = distance; // 거리 추가
+      return distance <= maxDistance;
+    });
+
+    // 사용자로부터 받은 가중치와 상태 값 설정
+    const weights = [commercialScale, rentPrice, transportation, singleHousehold];
+    const statuses = [true, true, true, true];
+
+    // 가중치를 이용해 computedValue 계산
+    const computedGeoJson = getComputedGeoJson({ features: nearbyFeatures }, weights, statuses);
+    res.json(computedGeoJson.features);
+  });
 });
-
-app.post('/calculate-distances', (req, res) => {
-  const { latitude, longitude, maxDistance } = req.body;
-  const geojson = JSON.parse(fs.readFileSync('transport_updated_geojson_file.geojson'));
-
-
-  if (!latitude || !longitude || maxDistance === undefined) {
-    return res.status(400).send({ error: 'Latitude, Longitude, and maxDistance are required.' });
-  }
-
-  const userPoint = turf.point([longitude, latitude]);
-
-  const results = geojson.features.map(feature => {
-    const centroid = turf.centroid(feature);
-    const distance = turf.distance(userPoint, centroid, { units: 'kilometers' });
-
-    return {
-      feature: feature.properties,
-      centroid: centroid.geometry.coordinates,
-      distance: distance
-    };
-  }).filter(result => result.distance <= maxDistance);
-
-  res.send(results);
-});
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
