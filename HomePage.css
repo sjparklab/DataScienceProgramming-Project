@@ -100,7 +100,7 @@ body, html {
     text-decoration: underline;
   }
   
-  .container {
+  .container-home {
     width: 100%;
     margin: auto;
     overflow: hidden;
@@ -113,7 +113,7 @@ body, html {
     align-items: center;
     justify-content: center;
     height: 100vh;
-    box-sizing: border-box;
+    box-sizing:content-box;
     text-align: center;
   }
   
@@ -140,9 +140,13 @@ body, html {
   
   .footer {
     text-align: center;
+    box-sizing: border-box;
     padding: 20px;
     background: #333;
     color: #fff;
+    position: relative; /* Ensure footer is in document flow */
+    bottom: 0;
+    width: 100%;
   }
   
   button {

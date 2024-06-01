@@ -51,7 +51,7 @@ const App = () => {
           이러한 트렌드를 반영하여, 우리는 1인 가구를 위한 주거지역 추천 웹사이트인 SingleNest를 기획하게 되었습니다.</p>
       </div>
 
-      <div className="container">
+      <div className="container-home">
         <Section id="home" title="데이터 분석 및 시각화" imgSrc="your-image-path.jpg" imgAlt="1인 가구 증가">
           <p>1인 가구 수, 전체 가구 수, 지역별 1인 가구 비율과 주거 환경 요소들의 상관관계를 분석하여<br />
             글로 정리하고 그래프로 나타냅니다.<br />
