@@ -107,7 +107,7 @@ function App() {
         <Form onSubmit={handleSubmit}>
           <FormRow>
             <FormControl fullWidth>
-              <InputLabel id="current-workplace-sido-label">현재 직장(시도)</InputLabel>
+              <InputLabel id="current-workplace-sido-label">현재 직장/학교(시도)</InputLabel>
               <Select
                 labelId="current-workplace-sido-label"
                 id="current-workplace-sido"
@@ -123,7 +123,7 @@ function App() {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel id="current-workplace-sigungu-label">현재 직장(시군구)</InputLabel>
+              <InputLabel id="current-workplace-sigungu-label">현재 직장/학교(시군구)</InputLabel>
               <Select
                 labelId="current-workplace-sigungu-label"
                 id="current-workplace-sigungu"
@@ -140,7 +140,7 @@ function App() {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel id="current-workplace-eupmyeondong-label">현재 직장(읍면동)</InputLabel>
+              <InputLabel id="current-workplace-eupmyeondong-label">현재 직장/학교(읍면동)</InputLabel>
               <Select
                 labelId="current-workplace-eupmyeondong-label"
                 id="current-workplace-eupmyeondong"
