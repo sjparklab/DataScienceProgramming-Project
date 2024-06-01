@@ -12,7 +12,6 @@ import MapIcon from '@mui/icons-material/Map';
 import HomePage from './HomePage';
 import Recommended from './Recommended';
 import MapPage from './MapPage';
-import CalcDistance from './calcultext.jsx';
 import './styles.css';
 
 const theme = createTheme({
@@ -48,7 +47,6 @@ function Root() {
             <Button color="inherit" component={Link} to="/">메인페이지</Button>
             <Button color="inherit" component={Link} to="/recommended">추천시스템</Button>
             <Button color="inherit" component={Link} to="/map"><MapIcon />지도</Button>
-            <Button color="inherit" component={Link} to="/calc">거리계산</Button>
           </Toolbar>
         </AppBar>
         <Box mt={8}>
@@ -56,7 +54,6 @@ function Root() {
             <Route path="/" element={<HomePage />} />
             <Route path="/recommended" element={<Recommended />} />
             <Route path="/map" element={<MapPage />} />
-            <Route path="/calc" element={<CalcDistance />} />
           </Routes>
         </Box>
       </Router>
