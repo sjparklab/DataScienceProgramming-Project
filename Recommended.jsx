@@ -43,6 +43,46 @@ const ResultContainer = styled('div')({
   marginTop: '24px',
 });
 
+// Define key-to-label mapping
+const keyLabels = {
+  행정구역_x: "행정구역(행정동)명",
+  '2023년_계_총세대수': "지역 내 1인가구수",
+  '2023년_계_총인구수': "지역 내 총 인구수",
+  '2023년_세대수(전체세대)': "지역 내 총 세대수",
+  'montly-avg_단독다가구': "단독다가구 평균 월세",
+  'dep-avg_단독다가구_월세': "단독다가구 평균 월세보증금",
+  'montly-avg_아파트': "아파트 평균 월세",
+  'dep-avg_아파트_월세': "아파트 평균 월세보증금",
+  'montly-avg_연립다세대': "연립다세대 평균 월세",
+  'dep-avg_연립다세대_월세': "연립다세대 평균 월세보증금",
+  'montly-avg_오피스텔': "오피스텔 평균 월세",
+  'dep-avg_오피스텔_월세': "오피스텔 평균 월세보증금",
+  'dep-avg_단독다가구_전세': '단독다가구 평균 전세보증금',
+  'dep-avg_아파트_전세': '아파트 평균 전세보증금',
+  'dep-avg_연립다세대_전세': '연립다세대 평균 전세보증금',
+  'dep-avg_오피스텔_전세': '오피스텔 평균 전세보증금',
+  'montly-avg_mean': "전체 월세 평균",
+  "dep-avg_rent_mean": "전체 월세보증금 평균",
+  "dep-avg_deposit_mean": "전체 전세보증금 평균",
+  commercialScale: '상업규모',
+  rentPrice: '평균 전월세가격',
+  transportation: '교통규모',
+  singleHousehold: '1인가구 거주규모',
+  distance: '원 지점과의 거리',
+  // Add more key-to-label mappings as needed
+};
+
+// Create a component to display properties
+const PropertyDisplay = ({ properties }) => {
+  return (
+    <div>
+      {Object.entries(properties).map(([key, value]) => (
+        <Typography key={key}>{`${keyLabels[key] || key}: ${value}`}</Typography>
+      ))}
+    </div>
+  );
+};
+
 function App() {
   const [formData, setFormData] = useState({
     name: '',
@@ -246,9 +286,7 @@ function App() {
             {recommendedAreas.length > 0 && (
               <Paper style={{ padding: '16px', marginBottom: '16px' }}>
                 <Typography variant="h6">{recommendedAreas[0].properties.행정구역_x}</Typography>
-                {Object.entries(filterProperties(recommendedAreas[0].properties)).map(([key, value]) => (
-                  <Typography key={key}>{`${key}: ${value}`}</Typography>
-                ))}
+                <PropertyDisplay properties={filterProperties(recommendedAreas[0].properties)} />
               </Paper>
             )}
 
@@ -261,9 +299,7 @@ function App() {
                   {recommendedAreas.slice(1).map((area, index) => (
                     <Paper key={index} style={{ padding: '16px', marginBottom: '16px' }}>
                       <Typography variant="h6">{area.properties.행정구역_x}</Typography>
-                      {Object.entries(filterProperties(area.properties)).map(([key, value]) => (
-                        <Typography key={key}>{`${key}: ${value}`}</Typography>
-                      ))}
+                      <PropertyDisplay properties={filterProperties(area.properties)} />
                     </Paper>
                   ))}
                 </AccordionDetails>
