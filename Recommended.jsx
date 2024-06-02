@@ -100,9 +100,9 @@ const PropertyDisplay = ({ properties }) => {
 function App() {
   const [formData, setFormData] = useState({
     name: '',
-    currentWorkplaceSido: '',
-    currentWorkplaceSigungu: '',
-    currentWorkplaceEupmyeondong: '',
+    currentWorkplaceSido: '부산광역시',
+    currentWorkplaceSigungu: '부산진구',
+    currentWorkplaceEupmyeondong: '가야1동',
     commercialScale: 5,
     rentPrice: 5,
     transportation: 5,
