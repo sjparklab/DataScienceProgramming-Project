@@ -37,9 +37,32 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
     '2023년_계_총세대수', 'count_transport', 'sum_all_shop',
     'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
   ];
+  const priceColumns = ['montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'];
+
+  const priceColumnAverages = priceColumns.reduce((acc, column) => {
+    const values = geojsonData.features.map(f => parseValue(f.properties[column])).filter(value => !isNaN(value));
+    const sum = values.reduce((total, value) => total + value, 0);
+    const avg = sum / values.length;
+    acc[column] = avg;
+    return acc;
+  }, {});
 
   geojsonData.features.forEach(feature => {
+    // 가격 열의 null 값을 평균값으로 대체
+    priceColumns.forEach(column => {
+      if (!feature.properties[column] || isNaN(parseValue(feature.properties[column]))) {
+        feature.properties[column] = priceColumnAverages[column];
+      }
+    });
+
     const priceSum = parseValue(feature.properties['montly-avg_mean']) +
+      parseValue(feature.properties['dep-avg_rent_mean']) +
+      parseValue(feature.properties['dep-avg_deposit_mean']);
+    feature.properties.priceSum = priceSum;
+  });
+    
+  geojsonData.features.forEach(feature => {
+    const priceSum = (parseValue(feature.properties['montly-avg_mean']) * 12 / 0.06) +
       parseValue(feature.properties['dep-avg_rent_mean']) +
       parseValue(feature.properties['dep-avg_deposit_mean']);
     feature.properties.priceSum = priceSum;
@@ -62,7 +85,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
 
     const priceSumNormalized = normalize(feature.properties.priceSum, 'priceSum');
     const reversePriceSumNormalized = 1 - priceSumNormalized;
-    feature.properties.priceSumNormalized = priceSumNormalized;
+    feature.properties.reversepriceSumNormalized = reversePriceSumNormalized;
 
     const computedValue =
       (statuses[0] ? normalizedValues[0] * weights[0] : 0) +
@@ -98,6 +121,12 @@ const getDistance = (coord1, coord2) => {
   const to = turf.point(coord2);
   const distance = turf.distance(from, to, { units: 'kilometers' });
   return distance;
+};
+
+// 지역명 변환 함수
+const convertRegionName = (regionName) => {
+  if (!regionName) return ''; // null 또는 undefined 체크
+  return regionName.replace(/·/g, '.');
 };
 
 app.get('/geojson/:type', (req, res) => {
@@ -166,14 +195,13 @@ app.post('/update-geojson/:type', (req, res) => {
 
 app.post('/api/recommend', (req, res) => {
   const {
-    name,
     currentWorkplaceSido,
     currentWorkplaceSigungu,
     currentWorkplaceEupmyeondong,
     commercialScale,
-    rentPrice,
     transportation,
     singleHousehold,
+    rentPrice,
     maxDistance,
   } = req.body;
 
@@ -201,11 +229,11 @@ app.post('/api/recommend', (req, res) => {
     const featuresWithCentroids = getCentroids(geojsonData);
 
     // 현재 직장의 행정구역 합치기
-    const workplaceRegion = `${currentWorkplaceSido} ${currentWorkplaceSigungu} ${currentWorkplaceEupmyeondong}`;
+    const workplaceRegion = convertRegionName(`${currentWorkplaceSido} ${currentWorkplaceSigungu} ${currentWorkplaceEupmyeondong}`);
 
     // 현재 직장의 중심점 찾기
     const workplaceFeature = featuresWithCentroids.find(
-      feature => feature.properties.행정구역_x === workplaceRegion
+      feature => convertRegionName(feature.properties.행정구역_x) === workplaceRegion
     );
 
     if (!workplaceFeature) {
@@ -224,7 +252,7 @@ app.post('/api/recommend', (req, res) => {
     });
 
     // 사용자로부터 받은 가중치와 상태 값 설정
-    const weights = [commercialScale, rentPrice, transportation, singleHousehold];
+    const weights = [commercialScale, transportation, singleHousehold, rentPrice];
     const statuses = [true, true, true, true];
 
     // 가중치를 이용해 computedValue 계산

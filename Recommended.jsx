@@ -64,11 +64,25 @@ const keyLabels = {
   'montly-avg_mean': "전체 월세 평균",
   "dep-avg_rent_mean": "전체 월세보증금 평균",
   "dep-avg_deposit_mean": "전체 전세보증금 평균",
-  commercialScale: '상업규모',
-  rentPrice: '평균 전월세가격',
+  "sum_과학·기술": "과학기술 상가 갯수",
+  "sum_교육": "교육 상가 갯수",
+  "sum_보건의료": "보건의료 상가 갯수",
+  "sum_부동산": "부동산 상가 갯수",
+  "sum_소매": "소매 상가 갯수",
+  "sum_수리·개인": "수리·개인 상가 갯수",
+  "sum_숙박": "숙박 상가 갯수",
+  "sum_시설관리·임대": "시설관리·임대 상가 갯수",
+  "sum_예술·스포츠": "예술 상가 갯수",
+  "sum_음식": "음식 상가 갯수",
+  "sum_all_shop": "전체 상가 갯수",
+  count_bus: "버스정류장 갯수",
+  count_도시철도: "도시철도 역 갯수",
+  count_transport: "전체 교통수단 갯수", 
+  priceSum: '전월세가격 총 합',
   transportation: '교통규모',
   singleHousehold: '1인가구 거주규모',
   distance: '원 지점과의 거리',
+  computedValue: "최종 점수"
   // Add more key-to-label mappings as needed
 };
 
@@ -131,7 +145,7 @@ function App() {
   const eupmyeondongs = currentWorkplaceSigungu ? locationsData[currentWorkplaceSido].eupmyeondongs[currentWorkplaceSigungu] : [];
 
   const filterProperties = (properties) => {
-    const excludedKeys = ['ADM_NM', 'ADM_CD', 'BASE_DATE', 'centroid', 'priceSumNormalized', 'region_code'];
+    const excludedKeys = ['ADM_NM', 'ADM_CD', 'BASE_DATE', 'centroid', 'priceSumNormalized', 'region_code', 'reversepriceSumNormalized'];
     return Object.keys(properties)
       .filter(key => !excludedKeys.includes(key))
       .reduce((obj, key) => {
@@ -212,20 +226,6 @@ function App() {
           </Box>
 
           <Box>
-            <Typography gutterBottom>평균 전월세가격</Typography>
-            <Slider
-              value={formData.rentPrice}
-              onChange={handleSliderChange('rentPrice')}
-              aria-labelledby="rent-price-slider"
-              valueLabelDisplay="auto"
-              step={1}
-              marks
-              min={0}
-              max={10}
-            />
-          </Box>
-
-          <Box>
             <Typography gutterBottom>교통규모</Typography>
             <Slider
               value={formData.transportation}
@@ -244,7 +244,21 @@ function App() {
             <Slider
               value={formData.singleHousehold}
               onChange={handleSliderChange('singleHousehold')}
-              aria-labelledby="single-household-slider"
+              aria-labelledby="singleHousehold-slider"
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={0}
+              max={10}
+            />
+          </Box>
+
+          <Box>
+            <Typography gutterBottom>평균 전월세가격</Typography>
+            <Slider
+              value={formData.rentPrice}
+              onChange={handleSliderChange('rentPrice')}
+              aria-labelledby="rentPrice-slider"
               valueLabelDisplay="auto"
               step={1}
               marks

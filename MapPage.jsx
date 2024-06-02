@@ -122,7 +122,7 @@ function MapPage() {
           <div>총세대수: ${properties['2023년_계_총세대수']}</div>
           <div>운송수단수: ${properties['count_transport']}</div>
           <div>상점수: ${properties['sum_all_shop']}</div>
-          <div>평균 전월세 가격지수: ${properties.priceSumNormalized !== undefined ? (100 - properties.priceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
+          <div>평균 전월세 가격지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
           <div>Computed Value: ${properties['computedValue'].toFixed(2)}</div>
         `;
       } else {
