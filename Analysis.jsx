@@ -54,6 +54,7 @@ const GraphContainer = styled.div`
   border-radius: 10px;
   box-sizing: border-box;
   padding: 20px;
+  overflow: scroll;
 `;
 
 const GraphImage = styled.img`
@@ -228,7 +229,7 @@ const App = () => {
         <Section>
           <SectionTitle>히트맵 분석</SectionTitle>
           <GraphContainer>
-            <GraphImage src="C:/Users/com/Desktop/그래프/그래프 영역 4/히트맵.png" alt="Image" />
+            <GraphImage src="그래프/그래프 영역 4/히트맵.png" alt="Image" />
           </GraphContainer>
           <TextSection>
             <p>히트맵 분석 결과, 1인 가구 수와 다양한 상권 데이터 및 주거비용 간의 상관관계에 대해 여러 중요한 시사점을 도출할 수 있었습니다.
