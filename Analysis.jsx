@@ -54,6 +54,20 @@ const GraphContainer = styled.div`
   border-radius: 10px;
   box-sizing: border-box;
   padding: 20px;
+`;
+
+const GraphContainer3 = styled.div`
+  width: 100%;
+  height: 1200px;
+  background: #FFFFFF;
+  color: #e5e5e5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 20px;
   overflow: scroll;
 `;
 
@@ -182,7 +196,7 @@ const App = () => {
 
         <Section>
           <SectionTitle>시군구별 1인 세대 수 분석</SectionTitle>
-          <GraphContainer>
+          <GraphContainer3>
             <GraphImage src="그래프/그래프 영역 3/서울.png" alt="그래프 1" />
             <GraphImage src="그래프/그래프 영역 3/서울_비.png" alt="그래프 1 추가" />
             <GraphImage src="그래프/그래프 영역 3/부산.png" alt="그래프 2" />
@@ -217,7 +231,7 @@ const App = () => {
             <GraphImage src="그래프/그래프 영역 3/경남_비.png" alt="그래프 16 추가" />
             <GraphImage src="그래프/그래프 영역 3/제주.png" alt="그래프 17" />
             <GraphImage src="그래프/그래프 영역 3/제주_비.png" alt="그래프 17 추가" />
-          </GraphContainer>
+          </GraphContainer3>
           <TextSection>
             <p>좌측 그래프는 각 시도의 시군구별 1인 세대 수를, 우측 그래프는 각 시도의 시군구별 1인 세대 비율을 나타내고 있습니다. 그래프는 위에서부터 서울, 부산, 대구, 인천, 광주, 대전, 울산, 세종, 경기, 강원, 충북, 충남, 전북, 전남, 경북, 경남, 제주 순으로 정렬되어 있습니다.
 
