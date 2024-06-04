@@ -35,9 +35,9 @@ const parseValue = (value) => {
 const getComputedGeoJson = (geojsonData, weights, statuses) => {
   const columns = [
     '2023년_계_총세대수', 'count_transport', 'sum_all_shop',
-    'montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'
+    '평균 단위면적당 월세금', '평균 월세 단위면적당 보증금', '평균 전세 단위면적당 보증금'
   ];
-  const priceColumns = ['montly-avg_mean', 'dep-avg_rent_mean', 'dep-avg_deposit_mean'];
+  const priceColumns = ['평균 단위면적당 월세금', '평균 월세 단위면적당 보증금', '평균 전세 단위면적당 보증금'];
 
   const priceColumnAverages = priceColumns.reduce((acc, column) => {
     const values = geojsonData.features.map(f => parseValue(f.properties[column])).filter(value => !isNaN(value));
@@ -55,16 +55,16 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
       }
     });
 
-    const priceSum = parseValue(feature.properties['montly-avg_mean']) +
-      parseValue(feature.properties['dep-avg_rent_mean']) +
-      parseValue(feature.properties['dep-avg_deposit_mean']);
+    const priceSum = parseValue(feature.properties['평균 단위면적당 월세금']) +
+      parseValue(feature.properties['평균 월세 단위면적당 보증금']) +
+      parseValue(feature.properties['평균 전세 단위면적당 보증금']);
     feature.properties.priceSum = priceSum;
   });
     
   geojsonData.features.forEach(feature => {
-    const priceSum = (parseValue(feature.properties['montly-avg_mean']) * 12 / 0.06) +
-      parseValue(feature.properties['dep-avg_rent_mean']) +
-      parseValue(feature.properties['dep-avg_deposit_mean']);
+    const priceSum = (parseValue(feature.properties['평균 단위면적당 월세금']) * 12 / 0.06) +
+      parseValue(feature.properties['평균 월세 단위면적당 보증금']) +
+      parseValue(feature.properties['평균 전세 단위면적당 보증금']);
     feature.properties.priceSum = priceSum;
   });
 
@@ -131,7 +131,7 @@ const convertRegionName = (regionName) => {
 
 app.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : '전체데이터_단위면적_포함.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구.geojson' : '전체데이터_최종처리_읍면동.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
@@ -160,7 +160,7 @@ app.get('/geojson/:type', (req, res) => {
 app.post('/update-geojson/:type', (req, res) => {
   const { type } = req.params;
   const { weights, statuses } = req.body;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : '전체데이터_단위면적_포함.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구.geojson' : '전체데이터_최종처리_읍면동.geojson');
 
   console.log('받은 가중치:', weights);
   console.log('받은 상태:', statuses);
@@ -207,7 +207,7 @@ app.post('/api/recommend', (req, res) => {
 
   console.log('Received data:', req.body);
 
-  const geojsonPath = path.join(__dirname, '전체데이터_단위면적_포함.geojson');
+  const geojsonPath = path.join(__dirname, '전체데이터_최종처리_읍면동.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
