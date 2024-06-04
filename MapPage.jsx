@@ -145,14 +145,14 @@ function MapPage() {
               borderBottomRightRadius: 16,
               boxShadow: '2px 0 4px rgba(0, 0, 0, 0.1)',
               padding: isDrawerOpen ? '10px' : '0px',
-              marginTop: '64px',
+              marginTop: '0px',
               overflow: 'hidden',  // 접힌 상태에서 콘텐츠 숨김
               transition: 'width 0.3s, padding 0.3s',  // 애니메이션 적용
             }
           }}
         >
           <div className="control-panel" style={{ display: isDrawerOpen ? 'block' : 'none' }}>
-            <div className="control-box">
+            <div className="control-box" style={{ marginTop: '84px'}}>
               <Typography className="sidebar-title">레이어 설정</Typography>
               <div className="toggle-button-group">
                 <Button
@@ -257,14 +257,14 @@ function MapPage() {
         >
           {isDrawerOpen ? <ArrowBackIosNewIcon /> : <ArrowForwardIosIcon />}
         </IconButton>
-        <main className="map-container" style={{ marginLeft: isDrawerOpen ? '360px' : '0', transition: 'margin-left 0.3s' }}>
+        <main className="map-container" style={{ marginLeft: isDrawerOpen ? '0' : '0', transition: 'margin-left 0.3s' }}>
           <Map
             initialViewState={INITIAL_VIEW_STATE}
             mapStyle={MAP_STYLE}
             mapboxAccessToken={MAPBOX_TOKEN}
           >
             <DeckGLOverlay layers={[geoJsonLayer]} />
-            <NavigationControl position="top-left" />
+            <NavigationControl position="top-right" />
           </Map>
           <div id="tooltip" style={{ position: 'absolute', zIndex: 1001, pointerEvents: 'none', background: 'rgba(0, 0, 0, 0.8)', padding: '10px', borderRadius: '3px', color: 'white', display: 'none', fontSize: '14px', maxWidth: '300px', lineHeight: '1.5' }} />
         </main>

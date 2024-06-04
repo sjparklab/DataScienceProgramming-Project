@@ -10,7 +10,8 @@ import locationsData from './locations_data.json'; // locations_data.json 파일
 const RECOMMENDED_URL = import.meta.env.VITE_RECOMMENDED_URL;
 
 const Root = styled('div')({
-  minHeight: 'calc(100vh - 64px)',
+  minHeight: '100vh',
+  marginTop: '0px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
@@ -18,7 +19,7 @@ const Root = styled('div')({
 });
 
 const StyledPaper = styled(Paper)({
-  padding: '16px',
+  padding: '30px',
   backgroundColor: '#ffffff',
   boxShadow: '0px 3px 6px rgba(0, 0, 0, 0.16)',
 });

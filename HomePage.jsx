@@ -33,18 +33,6 @@ const App = () => {
         <video src="KakaoTalk_20240601_071254025.mp4" autoPlay muted loop></video>
       </div>
 
-      <header className="header">
-        <h1>SingleNest</h1>
-        <nav>
-          <ul>
-            <li><a href="#home">home</a></li>
-            <li><a href="#analysis">analysis</a></li>
-            <li><a href="#map">map</a></li>
-            <li><a href="#recommendation">recommendation</a></li>
-          </ul>
-        </nav>
-      </header>
-
       <div className="fullscreen-message animate-scroll-fadein" id="fullscreen-message">
         <h1>현대 사회에서 1인 가구의 수가 급격히 증가하고 있습니다.</h1>
         <p>이는 다양한 사회적, 경제적 변화에 기인한 현상으로, 개인의 생활 방식과 주거 패턴에도 큰 영향을 미치고 있습니다.<br />

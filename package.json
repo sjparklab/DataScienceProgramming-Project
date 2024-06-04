@@ -30,6 +30,7 @@
     "react-dom": "^18.0.0",
     "react-map-gl": "^7.1.0",
     "react-router-dom": "^6.3.0",
+    "styled-components": "^6.1.11",
     "turf": "^3.0.14"
   },
   "devDependencies": {

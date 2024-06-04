@@ -131,7 +131,7 @@ const convertRegionName = (regionName) => {
 
 app.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : 'transport_updated_geojson_file.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : '전체데이터_단위면적_포함.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
@@ -160,7 +160,7 @@ app.get('/geojson/:type', (req, res) => {
 app.post('/update-geojson/:type', (req, res) => {
   const { type } = req.params;
   const { weights, statuses } = req.body;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : 'transport_updated_geojson_file.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? 'transport_sigungu_final.geojson' : '전체데이터_단위면적_포함.geojson');
 
   console.log('받은 가중치:', weights);
   console.log('받은 상태:', statuses);
@@ -207,7 +207,7 @@ app.post('/api/recommend', (req, res) => {
 
   console.log('Received data:', req.body);
 
-  const geojsonPath = path.join(__dirname, 'transport_updated_geojson_file.geojson');
+  const geojsonPath = path.join(__dirname, '전체데이터_단위면적_포함.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
