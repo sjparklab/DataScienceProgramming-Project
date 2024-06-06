@@ -79,17 +79,24 @@ const PropertyDisplay = ({ properties }) => {
   };
   return (
     <div>
-      <Typography>{`${keyLabels['2023년_계_총세대수'] || '2023년_계_총세대수'}: ${formatNumber(properties['2023년_계_총세대수'])}`}</Typography>
-      <Typography>{`${keyLabels["sum_all_shop"] || "sum_all_shop"}: ${formatNumber(properties["sum_all_shop"])}`}</Typography>
-      <Typography>{`${keyLabels["count_transport"] || "count_transport"}: ${formatNumber(properties["count_transport"])}`}</Typography>
-      <Typography>{`${keyLabels['면적 당 1인가구 수'] || '면적 당 1인가구 수'}: ${formatNumber(properties['면적 당 1인가구수'])}`}</Typography>
-      <Typography>{`${keyLabels["면적 당 전체 상업시설 수"] || "면적 당 전체 상업시설 수"}: ${formatNumber(properties["면적 당 전체 상점 수"])}`}</Typography>
-      <Typography>{`${keyLabels["면적 당 대중교통 수"] || "면적 당 대중교통 수"}: ${formatNumber(properties["면적 당 대중교통 수"])}`}</Typography>
-      <Typography>{`평균 단위면적당 월세 (만원): ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
-      <Typography>{`단위면적당 월세 보증금 평균 (만원): ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
-      <Typography>{`단위면적당 전세 보증금 평균 (만원): ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
-      <Typography>{`원 지점과의 거리 (km): ${formatNumber(properties["distance"])}`}</Typography>
-      <Typography>{`최종 점수: ${formatNumber(properties["computedValue"])}`}</Typography>
+      <Accordion>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>기본정보</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>{`${keyLabels['2023년_계_총세대수'] || '2023년_계_총세대수'}: ${formatNumber(properties['2023년_계_총세대수'])}`}</Typography>
+          <Typography>{`${keyLabels["sum_all_shop"] || "sum_all_shop"}: ${formatNumber(properties["sum_all_shop"])}`}</Typography>
+          <Typography>{`${keyLabels["count_transport"] || "count_transport"}: ${formatNumber(properties["count_transport"])}`}</Typography>
+          <Typography>{`${keyLabels['면적 당 1인가구 수'] || '면적 당 1인가구 수'}: ${formatNumber(properties['면적 당 1인가구수'])}`}</Typography>
+          <Typography>{`${keyLabels["면적 당 전체 상업시설 수"] || "면적 당 전체 상업시설 수"}: ${formatNumber(properties["면적 당 전체 상점 수"])}`}</Typography>
+          <Typography>{`${keyLabels["면적 당 대중교통 수"] || "면적 당 대중교통 수"}: ${formatNumber(properties["면적 당 대중교통 수"])}`}</Typography>
+          <Typography>{`평균 단위면적당 월세 (만원): ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 월세 보증금 평균 (만원): ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 전세 보증금 평균 (만원): ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`원 지점과의 거리 (km): ${formatNumber(properties["distance"])}`}</Typography>
+          <Typography>{`최종 점수: ${formatNumber(properties["computedValue"])}`}</Typography>
+        </AccordionDetails>
+      </Accordion>
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>추가 인구정보</Typography>
@@ -298,20 +305,6 @@ function App() {
               value={formData.transportation}
               onChange={handleSliderChange('transportation')}
               aria-labelledby="transportation-slider"
-              valueLabelDisplay="auto"
-              step={1}
-              marks
-              min={0}
-              max={10}
-            />
-          </Box>
-
-          <Box>
-            <Typography gutterBottom>1인가구 수</Typography>
-            <Slider
-              value={formData.singleHousehold}
-              onChange={handleSliderChange('singleHousehold')}
-              aria-labelledby="singleHousehold-slider"
               valueLabelDisplay="auto"
               step={1}
               marks

@@ -264,8 +264,8 @@ app.post('/api/recommend', (req, res) => {
     });
 
     // 사용자로부터 받은 가중치와 상태 값 설정
-    const weights = [commercialScale, transportation, singleHousehold, 5]; // rentPrice 대신 1로 설정
-    const statuses = [true, true, true, true]; // rentPrice 대신 false로 설정
+    const weights = [0, transportation, commercialScale, 5]; // rentPrice 대신 1로 설정
+    const statuses = [false, true, true, true]; // rentPrice 대신 false로 설정
 
     // 가격 범위 필터링
     const filteredFeatures = nearbyFeatures.filter(feature => {
