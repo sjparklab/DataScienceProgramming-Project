@@ -88,7 +88,6 @@ const PropertyDisplay = ({ properties }) => {
       <Typography>{`평균 단위면적당 월세 (만원): ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
       <Typography>{`단위면적당 월세 보증금 평균 (만원): ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
       <Typography>{`단위면적당 전세 보증금 평균 (만원): ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
-      <Typography>{`${keyLabels["priceSum"] || "priceSum"}: ${formatNumber(properties["priceSum"])}`}</Typography>
       <Typography>{`원 지점과의 거리 (km): ${formatNumber(properties["distance"])}`}</Typography>
       <Typography>{`최종 점수: ${formatNumber(properties["computedValue"])}`}</Typography>
       <Accordion>
