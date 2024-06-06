@@ -137,18 +137,18 @@ const PropertyDisplay = ({ properties }) => {
           <Typography>추가 부동산 정보</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>{`단위면적당 단독다가구 월세 보증금: ${formatNumber(properties["단독다가구 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 단독다가구 월세: ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`단위면적당 단독다가구 전세 보증금: ${formatNumber(properties["단독다가구 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 아파트 월세 보증금: ${formatNumber(properties["아파트 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 아파트 월세: ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`단위면적당 아파트 전세 보증금: ${formatNumber(properties["아파트 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 연립다세대 월세 보증금: ${formatNumber(properties["연립다세대 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 연립다세대 월세: ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`단위면적당 연립다세대 전세 보증금: ${formatNumber(properties["연립다세대 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 오피스텔 월세 보증금: ${formatNumber(properties["오피스텔 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단위면적당 오피스텔 월세: ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`단위면적당 오피스텔 전세 보증금: ${formatNumber(properties["오피스텔 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 월세 보증금 (만원): ${formatNumber(properties["단독다가구 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 월세 (만원): ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 전세 보증금 (만원): ${formatNumber(properties["단독다가구 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 월세 보증금 (만원): ${formatNumber(properties["아파트 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 월세 (만원): ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 전세 보증금 (만원): ${formatNumber(properties["아파트 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 월세 보증금 (만원): ${formatNumber(properties["연립다세대 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 월세 (만원): ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 전세 보증금 (만원): ${formatNumber(properties["연립다세대 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 월세 보증금 (만원): ${formatNumber(properties["오피스텔 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 월세 (만원): ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 전세 보증금 (만원): ${formatNumber(properties["오피스텔 전세 단위면적당 보증금"])}`}</Typography>
         </AccordionDetails>
       </Accordion>
 
