@@ -281,7 +281,7 @@ function App() {
           </FormRow>
 
           <Box>
-            <Typography gutterBottom>상가 수</Typography>
+            <Typography gutterBottom>상권 접근성</Typography>
             <Slider
               value={formData.commercialScale}
               onChange={handleSliderChange('commercialScale')}
@@ -295,7 +295,7 @@ function App() {
           </Box>
 
           <Box>
-            <Typography gutterBottom>교통수단 접근성</Typography>
+            <Typography gutterBottom>대중교통 접근성</Typography>
             <Slider
               value={formData.transportation}
               onChange={handleSliderChange('transportation')}
@@ -309,7 +309,7 @@ function App() {
           </Box>
 
           <Box>
-            <Typography gutterBottom>1인가구 거주수</Typography>
+            <Typography gutterBottom>1인가구수</Typography>
             <Slider
               value={formData.singleHousehold}
               onChange={handleSliderChange('singleHousehold')}
