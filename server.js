@@ -131,7 +131,7 @@ const convertRegionName = (regionName) => {
 
 app.get('/geojson/:type', (req, res) => {
   const { type } = req.params;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구_면적당데이터_추가.geojson' : '전체데이터_최종처리_읍면동_면적당데이터_추가.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구_면적당데이터_추가.geojson' : '전체데이터_최종처리_읍면동_면적당데이터_추가_left.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
@@ -160,7 +160,7 @@ app.get('/geojson/:type', (req, res) => {
 app.post('/update-geojson/:type', (req, res) => {
   const { type } = req.params;
   const { weights, statuses } = req.body;
-  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구_면적당데이터_추가.geojson' : '전체데이터_최종처리_읍면동_면적당데이터_추가.geojson');
+  const geojsonPath = path.join(__dirname, type === 'sigungu' ? '전체데이터_최종처리_시군구_면적당데이터_추가.geojson' : '전체데이터_최종처리_읍면동_면적당데이터_추가_left.geojson');
 
   console.log('받은 가중치:', weights);
   console.log('받은 상태:', statuses);
@@ -213,7 +213,7 @@ app.post('/api/recommend', (req, res) => {
 
   console.log('Received data:', req.body);
 
-  const geojsonPath = path.join(__dirname, '전체데이터_최종처리_읍면동_면적당데이터_추가.geojson');
+  const geojsonPath = path.join(__dirname, '전체데이터_최종처리_읍면동_면적당데이터_추가_left.geojson');
 
   fs.readFile(geojsonPath, 'utf8', (err, data) => {
     if (err) {
