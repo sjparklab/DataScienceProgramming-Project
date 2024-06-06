@@ -370,7 +370,7 @@ function App() {
               <TextField
                 fullWidth
                 name="minPrice"
-                label="면적당 최소월세 (만원)"
+                label="최소월세 (만원)"
                 type="number"
                 value={formData.minPrice}
                 onChange={handleChange}
@@ -378,7 +378,7 @@ function App() {
               <TextField
                 fullWidth
                 name="maxPrice"
-                label="면적당 최대월세 (만원)"
+                label="최대월세 (만원)"
                 type="number"
                 value={formData.maxPrice}
                 onChange={handleChange}
@@ -389,7 +389,7 @@ function App() {
             <TextField
               fullWidth
               name="minDeposit"
-              label="면적당 최소 보증금 (만원)"
+              label="최소 보증금 (만원)"
               type="number"
               value={formData.minDeposit}
               onChange={handleChange}
@@ -397,7 +397,7 @@ function App() {
             <TextField
               fullWidth
               name="maxDeposit"
-              label="면적당 최대 보증금(만원)"
+              label="최대 보증금(만원)"
               type="number"
               value={formData.maxDeposit}
               onChange={handleChange}
