@@ -1,78 +1,81 @@
 import React, { useEffect } from 'react';
-import './HomePage.css'; // Custom CSS file for additional styling
+import './HomePage.css'; // CSS 파일은 별도로 관리
 
 const App = () => {
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-    };
+    const sections = document.querySelectorAll('.section, .fullscreen-message, .conclusion-text');
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('show');
-          entry.target.classList.remove('hide');
+          entry.target.classList.add('visible');
         } else {
-          entry.target.classList.remove('show');
-          entry.target.classList.add('hide');
+          entry.target.classList.remove('visible');
         }
       });
-    }, observerOptions);
+    }, { threshold: 0.1 });
 
-    document.querySelectorAll('.animate-scroll-fadein').forEach((section) => {
+    sections.forEach(section => {
       observer.observe(section);
     });
 
-    const fullscreenMessage = document.querySelector('.fullscreen-message');
-    observer.observe(fullscreenMessage);
+    return () => {
+      sections.forEach(section => {
+        observer.unobserve(section);
+      });
+    };
   }, []);
 
   return (
-    <div className="App">
+    <div>
       <div className="fullscreen-video-wrap">
-        <video src="KakaoTalk_20240601_071254025.mp4" autoPlay muted loop></video>
+        <video src="video.mp4" autoPlay muted loop></video>
       </div>
 
-      <div className="fullscreen-message animate-scroll-fadein" id="fullscreen-message">
-        <h1>현대 사회에서 1인 가구의 수가 급격히 증가하고 있습니다.</h1>
-        <p>이는 다양한 사회적, 경제적 변화에 기인한 현상으로, 개인의 생활 방식과 주거 패턴에도 큰 영향을 미치고 있습니다.<br />
-          이러한 트렌드를 반영하여, 우리는 1인 가구를 위한 주거지역 추천 웹사이트인 SingleNest를 기획하게 되었습니다.</p>
+      <div className="fullscreen-message" id="fullscreen-message">
+        <h1><span className="highlight">SingleNest</span>는 1인 가구 둥지 찾기 여정의 동반자입니다.</h1>
+        <p>SingleNest는 여러분의 생활 패턴과 예산에 가장 적합한 주거지를 찾는 과정을 단순화하고, 그 과정에서 새로운 편리함을 경험하도록 도와줍니다.
+          <br />새가 자신을 위한 완벽한 장소를 찾아 둥지를 틀 듯, SingleNest와 함께라면 여러분도 자신만의 완벽한 보금자리를 찾을 수 있습니다.</p>
       </div>
 
       <div className="container-home">
-        <Section id="home" title="데이터 분석 및 시각화" imgSrc="your-image-path.jpg" imgAlt="1인 가구 증가">
-          <p>1인 가구 수, 전체 가구 수, 지역별 1인 가구 비율과 주거 환경 요소들의 상관관계를 분석하여<br />
-            글로 정리하고 그래프로 나타냅니다.<br />
-            이를 통해 사용자에게 각 요소가 1인 가구 주거 선택에 미치는 영향을<br />
-            명확하게 이해할 수 있도록 합니다.</p>
-        </Section>
-
-        <Section id="features" title="지도 기반 시각화" imgSrc="your-image-path.jpg" imgAlt="지도 기반 시각화">
-          <p>1인 가구 수, 주택 가격 평균, 대중교통(버스, 지하철) 수, 상점 수를<br />
-            읍면동 별로 색깔을 사용하여 지도에 비교하여 나타냅니다.<br />
-            이를 통해 사용자는 각 지역의 주요 주거 환경 요소들을 한눈에 파악할 수 있습니다.</p>
-        </Section>
-
-        <Section id="recommendation" title="주거 지역 추천 프로그램" imgSrc="your-image-path.jpg" imgAlt="주거 지역 추천 프로그램">
-          <p>사용자가 자신의 학교나 회사가 위치한 읍면동을 선택하고,<br />
-            대중교통 접근성, 상권 데이터의 중요도, 원하는 주택 가격의 범위를 입력하면,<br />
-            해당 정보를 바탕으로 최적의 주거 지역을 추천합니다.<br />
-            이 기능은 개인의 요구에 맞춘 맞춤형 주거 솔루션을 제공합니다.</p>
-        </Section>
-
-        <Section id="benefits" title="기대 효과" imgSrc="your-image-path.jpg" imgAlt="기대 효과">
-          <p>SingleNest를 통해 1인 가구는 자신의 생활 패턴과 예산에 맞는 최적의 주거지를 쉽게 찾을 수 있습니다.<br />
-            이는 1인 가구의 생활 편의성을 높이고, 주거 안정성을 확보하는 데 큰 도움이 될 것입니다.<br />
-            또한, 주거 지역 선택 과정에서 발생할 수 있는 시간을 절약하고, 보다 합리적인 의사 결정을 내릴 수 있도록 지원합니다.</p>
-        </Section>
-
-        <div className="main centered-text animate-scroll-fadein" id="conclusion">
-          <div>
-            <p>1인 가구의 증가 추세에 발맞추어,<br />
-              SingleNest는 개인의 요구에 맞춘 맞춤형 주거 솔루션을 제공합니다.<br />
-              이를 통해 많은 1인 가구가 더욱 편리하고 만족스러운 주거 환경을 찾을 수 있기를 기대합니다.</p>
+        <div className="section" id="home">
+          <div className="box">
+            <img src="홈 삽입 사진/graph.jpg" alt="1인 가구 증가" className="inverted-image" />
+          </div>
+          <div className="box text-content data-visualization">
+            <h2><span className="highlight">그래프 기반 </span><span className="highlight-white">데이터 분석</span><span className="highlight">으로<br />1인 가구 관련 데이터 쉽게 이해</span></h2>
+            <p>1인 가구 수, 전체 가구 수, 1인 가구 비율, 주거 환경 요소들 간의 상관관계를
+              <br />막대 그래프, 히트맵 등으로 분석하고 시각화합니다.</p>
           </div>
         </div>
+
+        <div className="section" id="features">
+          <div className="box text-content map-visualization">
+            <h2><span className="highlight">전국 단위의 데이터를<br /></span><span className="highlight-white">지도</span><span className="highlight">로 한 눈에 파악</span></h2>
+            <p>1인 가구 수, 소형 주택 평당 가격, 대중교통 수, 상업 시설 수를
+              <br />시군구와 읍면동 단위로 비교하여 지도에 시각화합니다.</p>
+          </div>
+          <div className="box">
+            <img src="홈 삽입 사진/map.png" alt="지도 기반 시각화" />
+          </div>
+        </div>
+
+        <div className="section" id="recommendation">
+          <div className="box">
+            <img src="홈 삽입 사진/굳.png" alt="주거 지역 추천 프로그램" className="inverted-image" />
+          </div>
+          <div className="box text-content recommendation">
+            <h2><span className="highlight">사용자 맞춤 </span><span className="highlight-white">주거 지역 추천</span></h2>
+            <p>사용자가 자신의 학교나 회사가 위치한 읍면동을 선택하고,<br />
+              대중교통 접근성, 주택 평당 가격, 상권 데이터의 중요도를 선택하면,
+              <br />해당 정보를 바탕으로 최적의 주거 지역을 추천합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="conclusion-text">
+        <p>1인 가구의 증가 추세에 발맞추어,<br /><span className="highlight">SingleNest</span>는 개인의 요구에 맞춘 맞춤형 주거 솔루션을 제공합니다.<br />이를 통해 많은 1인 가구가 더욱 편리하고 만족스러운 주거 환경을 찾을 수 있기를 기대합니다.</p>
       </div>
 
       <footer className="footer">
@@ -81,15 +84,5 @@ const App = () => {
     </div>
   );
 };
-
-const Section = ({ id, title, imgSrc, imgAlt, children }) => (
-  <div className="main animate-scroll-fadein" id={id}>
-    <img src={imgSrc} alt={imgAlt} />
-    <div>
-      <h2>{title}</h2>
-      {children}
-    </div>
-  </div>
-);
 
 export default App;

@@ -34,10 +34,10 @@ function Root() {
           <h1><Link to="/" style={{textDecoration: 'none', color: '#FFFFFF'}}>SingleNest</Link></h1>
           <nav>
             <ul>
-              <li><Link to="/">HOME</Link></li>
-              <li><Link to="/analysis">ANALYSIS</Link></li>
-              <li><Link to="/map">MAP</Link></li>
-              <li><Link to="/recommended">RECOMMENDATION</Link></li>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/analysis">Analysis</Link></li>
+              <li><Link to="/map">Map</Link></li>
+              <li><Link to="/recommended">Recommendation</Link></li>
             </ul>
           </nav>
         </header>
