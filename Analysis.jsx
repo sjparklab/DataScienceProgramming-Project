@@ -55,7 +55,6 @@ const GraphContainer = styled.div`
   box-sizing: border-box;
   padding: 20px;
   overflow: scroll;
-
 `;
 
 const GraphContainer3 = styled.div`

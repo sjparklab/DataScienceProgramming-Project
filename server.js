@@ -32,12 +32,18 @@ const parseValue = (value) => {
   return parseFloat(value) || 0;
 };
 
-const getComputedGeoJson = (geojsonData, weights, statuses) => {
-  const columns = [
-    '면적 당 1인가구수', '면적 당 대중교통 수', '면적 당 전체 상점 수',
+const getComputedGeoJson = (geojsonData, weights, statuses, houseType) => {
+  const baseColumns = [
+    '면적 당 1인가구수', '면적 당 대중교통 수', '면적 당 전체 상점 수'
+  ];
+
+  const priceColumns = houseType ? [
+    `${houseType} 단위면적당 월세금`, `${houseType} 월세 단위면적당 보증금`, `${houseType} 전세 단위면적당 보증금`
+  ] : [
     '평균 단위면적당 월세금', '평균 월세 단위면적당 보증금', '평균 전세 단위면적당 보증금'
   ];
-  const priceColumns = ['평균 단위면적당 월세금', '평균 월세 단위면적당 보증금', '평균 전세 단위면적당 보증금'];
+
+  const columns = baseColumns.concat(priceColumns);
 
   const priceColumnAverages = priceColumns.reduce((acc, column) => {
     const values = geojsonData.features.map(f => parseValue(f.properties[column])).filter(value => !isNaN(value));
@@ -55,16 +61,16 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
       }
     });
 
-    const priceSum = parseValue(feature.properties['평균 단위면적당 월세금']) +
-      parseValue(feature.properties['평균 월세 단위면적당 보증금']) +
-      parseValue(feature.properties['평균 전세 단위면적당 보증금']);
+    const priceSum = parseValue(feature.properties[priceColumns[0]]) +
+      parseValue(feature.properties[priceColumns[1]]) +
+      parseValue(feature.properties[priceColumns[2]]);
     feature.properties.priceSum = priceSum;
   });
 
   geojsonData.features.forEach(feature => {
-    const priceSum = (parseValue(feature.properties['평균 단위면적당 월세금']) * 12 / 0.06) +
-      parseValue(feature.properties['평균 월세 단위면적당 보증금']) +
-      parseValue(feature.properties['평균 전세 단위면적당 보증금']);
+    const priceSum = (parseValue(feature.properties[priceColumns[0]]) * 12 / 0.06) +
+      parseValue(feature.properties[priceColumns[1]]) +
+      parseValue(feature.properties[priceColumns[2]]);
     feature.properties.priceSum = priceSum;
   });
 
@@ -258,8 +264,8 @@ app.post('/api/recommend', (req, res) => {
     });
 
     // 사용자로부터 받은 가중치와 상태 값 설정
-    const weights = [commercialScale, transportation, singleHousehold, 1]; // rentPrice 대신 1로 설정
-    const statuses = [true, true, true, false]; // rentPrice 대신 false로 설정
+    const weights = [commercialScale, transportation, singleHousehold, 5]; // rentPrice 대신 1로 설정
+    const statuses = [true, true, true, true]; // rentPrice 대신 false로 설정
 
     // 가격 범위 필터링
     const filteredFeatures = nearbyFeatures.filter(feature => {
@@ -268,18 +274,18 @@ app.post('/api/recommend', (req, res) => {
       const jeonseDepositKey = `${houseType} 전세 단위면적당 보증금`;
 
       if (rentType === '월세') {
-        const monthlyRent = parseValue(feature.properties[monthlyRentKey]) * area;
-        const deposit = parseValue(feature.properties[monthlyDepositKey]) * area;
+        const monthlyRent = parseValue(feature.properties[monthlyRentKey]) / area;
+        const deposit = parseValue(feature.properties[monthlyDepositKey]) / area;
         return monthlyRent >= minPrice && monthlyRent <= maxPrice && deposit >= minDeposit && deposit <= maxDeposit;
       } else if (rentType === '전세') {
-        const deposit = parseValue(feature.properties[jeonseDepositKey]) * area;
+        const deposit = parseValue(feature.properties[jeonseDepositKey]) / area;
         return deposit >= minDeposit && deposit <= maxDeposit;
       }
       return false;
     });
 
     // 가중치를 이용해 computedValue 계산
-    const computedGeoJson = getComputedGeoJson({ features: filteredFeatures }, weights, statuses);
+    const computedGeoJson = getComputedGeoJson({ features: filteredFeatures }, weights, statuses, houseType);
     res.json(computedGeoJson.features);
   });
 });

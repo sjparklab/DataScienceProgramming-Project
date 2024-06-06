@@ -91,7 +91,7 @@ function MapPage() {
     return <div>로딩 중...</div>;
   }
 
-  const colorScale = scaleSequential(interpolateGreens).domain([0, 100]);
+  const colorScale = scaleSequential(interpolateGreens).domain([-25, 75]);
 
   const geoJsonLayer = new GeoJsonLayer({
     id: 'geojson-layer',
