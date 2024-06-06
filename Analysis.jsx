@@ -65,7 +65,7 @@ const Section = styled.div`
 `;
 
 const SectionTitle = styled.h3`
-  color: #ffba00;
+  color: #FFFFFF;
 `;
 
 const Graph = styled.div`
