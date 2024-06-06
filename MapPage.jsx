@@ -123,7 +123,7 @@ function MapPage() {
           <div>면적 당 대중교통 수: ${properties['면적 당 대중교통 수'].toFixed(2)}</div>
           <div>면적 당 전체 상점 수: ${properties['면적 당 전체 상점 수'].toFixed(2)}</div>
           <div>평균 전월세 가격지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
-          <div>Computed Value: ${properties['computedValue'].toFixed(2)}</div>
+          <div>점수: ${properties['computedValue'].toFixed(2)}</div>
         `;
       } else {
         tooltip.style.display = 'none';

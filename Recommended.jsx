@@ -62,7 +62,7 @@ const keyLabels = {
   "sum_all_shop": "전체 상가 갯수",
   count_bus: "버스정류장 갯수",
   count_도시철도: "도시철도 역 갯수",
-  count_transport: "전체 교통수단 갯수", 
+  count_transport: "전체 대중교통 수",
   priceSum: '면적당 전월세가격 변환 합',
   transportation: '교통규모',
   singleHousehold: '1인가구 거주규모',
@@ -82,7 +82,10 @@ const PropertyDisplay = ({ properties }) => {
       <Typography>{`${keyLabels['2023년_계_총세대수'] || '2023년_계_총세대수'}: ${formatNumber(properties['2023년_계_총세대수'])}`}</Typography>
       <Typography>{`${keyLabels["sum_all_shop"] || "sum_all_shop"}: ${formatNumber(properties["sum_all_shop"])}`}</Typography>
       <Typography>{`${keyLabels["count_transport"] || "count_transport"}: ${formatNumber(properties["count_transport"])}`}</Typography>
-      <Typography>{`평균 단위면적당 월세금: ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
+      <Typography>{`${keyLabels['면적 당 1인가구수'] || '면적 당 1인가구수'}: ${formatNumber(properties['면적 당 1인가구수'])}`}</Typography>
+      <Typography>{`${keyLabels["면적 당 전체 상점 수"] || "면적 당 전체 상점 수"}: ${formatNumber(properties["면적 당 전체 상점 수"])}`}</Typography>
+      <Typography>{`${keyLabels["면적 당 대중교통 수"] || "면적 당 대중교통 수"}: ${formatNumber(properties["면적 당 대중교통 수"])}`}</Typography>
+      <Typography>{`평균 단위면적당 월세: ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
       <Typography>{`평균 월세 단위면적당 보증금: ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
       <Typography>{`평균 전세 단위면적당 보증금: ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
       <Typography>{`${keyLabels["priceSum"] || "priceSum"}: ${formatNumber(properties["priceSum"])}`}</Typography>
@@ -100,7 +103,7 @@ const PropertyDisplay = ({ properties }) => {
           <Typography>{`${keyLabels['지역별 1인가구 / 전체인구비'] || '지역별 1인가구 / 전체인구비'}: ${formatNumber(properties['지역별 1인가구 / 전체인구비'])}`}</Typography>
         </AccordionDetails>
       </Accordion>
-            
+
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>추가 상가 정보</Typography>
@@ -118,7 +121,7 @@ const PropertyDisplay = ({ properties }) => {
           <Typography>{`${keyLabels["sum_음식"] || "sum_음식"}: ${formatNumber(properties["sum_음식"])}`}</Typography>
         </AccordionDetails>
       </Accordion>
-            
+
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>추가 교통수단 정보</Typography>
@@ -128,27 +131,27 @@ const PropertyDisplay = ({ properties }) => {
           <Typography>{`${keyLabels["count_도시철도"] || "count_도시철도"}: ${formatNumber(properties["count_도시철도"])}`}</Typography>
         </AccordionDetails>
       </Accordion>
-            
+
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>추가 부동산 정보</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>{`단독다가구 월세 단위면적당 보증금: ${formatNumber(properties["단독다가구 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단독다가구 단위면적당 월세금: ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단독다가구 단위면적당 월세: ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
           <Typography>{`단독다가구 전세 단위면적당 보증금: ${formatNumber(properties["단독다가구 전세 단위면적당 보증금"])}`}</Typography>
           <Typography>{`아파트 월세 단위면적당 보증금: ${formatNumber(properties["아파트 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`아파트 단위면적당 월세금: ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`아파트 단위면적당 월세: ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
           <Typography>{`아파트 전세 단위면적당 보증금: ${formatNumber(properties["아파트 전세 단위면적당 보증금"])}`}</Typography>
           <Typography>{`연립다세대 월세 단위면적당 보증금: ${formatNumber(properties["연립다세대 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`연립다세대 단위면적당 월세금: ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`연립다세대 단위면적당 월세: ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
           <Typography>{`연립다세대 전세 단위면적당 보증금: ${formatNumber(properties["연립다세대 전세 단위면적당 보증금"])}`}</Typography>
           <Typography>{`오피스텔 월세 단위면적당 보증금: ${formatNumber(properties["오피스텔 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`오피스텔 단위면적당 월세금: ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`오피스텔 단위면적당 월세: ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
           <Typography>{`오피스텔 전세 단위면적당 보증금: ${formatNumber(properties["오피스텔 전세 단위면적당 보증금"])}`}</Typography>
         </AccordionDetails>
       </Accordion>
-      
+
     </div>
   );
 };
@@ -160,10 +163,16 @@ function App() {
     currentWorkplaceSigungu: '부산진구',
     currentWorkplaceEupmyeondong: '가야1동',
     commercialScale: 5,
-    rentPrice: 5,
+    rentType: '월세',
+    houseType: '오피스텔',
+    area: 30,
+    minPrice: 0,
+    maxPrice: 50,
     transportation: 5,
     singleHousehold: 5,
     maxDistance: 3,
+    minDeposit: 0,
+    maxDeposit: 5000,
   });
 
   const [recommendedAreas, setRecommendedAreas] = useState(null);
@@ -175,6 +184,10 @@ function App() {
       [name]: type === 'checkbox' ? checked : value,
       ...(name === 'currentWorkplaceSido' && { currentWorkplaceSigungu: '', currentWorkplaceEupmyeondong: '' }),
       ...(name === 'currentWorkplaceSigungu' && { currentWorkplaceEupmyeondong: '' }),
+      ...(name === 'rentType' && {
+        minDeposit: 0,
+        maxDeposit: value === '전세' ? 10000 : 1000
+      }),
     });
   };
 
@@ -309,19 +322,87 @@ function App() {
             />
           </Box>
 
-          <Box>
-            <Typography gutterBottom>평균 전월세가격</Typography>
-            <Slider
-              value={formData.rentPrice}
-              onChange={handleSliderChange('rentPrice')}
-              aria-labelledby="rentPrice-slider"
-              valueLabelDisplay="auto"
-              step={1}
-              marks
-              min={0}
-              max={10}
+          <FormRow>
+            <FormControl fullWidth>
+              <InputLabel id="rent-type-label">전세/월세</InputLabel>
+              <Select
+                labelId="rent-type-label"
+                id="rent-type"
+                name="rentType"
+                value={formData.rentType}
+                onChange={handleChange}
+                label="전세/월세"
+              >
+                <MenuItem value="월세">월세</MenuItem>
+                <MenuItem value="전세">전세</MenuItem>
+              </Select>
+            </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel id="house-type-label">주택유형</InputLabel>
+              <Select
+                labelId="house-type-label"
+                id="house-type"
+                name="houseType"
+                value={formData.houseType}
+                onChange={handleChange}
+                label="주택유형"
+              >
+                <MenuItem value="단독다가구">단독다가구</MenuItem>
+                <MenuItem value="연립다세대">연립다세대</MenuItem>
+                <MenuItem value="아파트">아파트</MenuItem>
+                <MenuItem value="오피스텔">오피스텔</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              name="area"
+              label="희망면적 (㎡)"
+              type="number"
+              value={formData.area}
+              onChange={handleChange}
+              inputProps={{ min: 10, max: 60 }}
             />
-          </Box>
+          </FormRow>
+          {formData.rentType !== '전세' && (
+            <FormRow>
+              <TextField
+                fullWidth
+                name="minPrice"
+                label="면적당 최소월세 (만원)"
+                type="number"
+                value={formData.minPrice}
+                onChange={handleChange}
+              />
+              <TextField
+                fullWidth
+                name="maxPrice"
+                label="면적당 최대월세 (만원)"
+                type="number"
+                value={formData.maxPrice}
+                onChange={handleChange}
+              />
+            </FormRow>
+          )}
+          <FormRow>
+            <TextField
+              fullWidth
+              name="minDeposit"
+              label="면적당 최소 보증금 (만원)"
+              type="number"
+              value={formData.minDeposit}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              name="maxDeposit"
+              label="면적당 최대 보증금(만원)"
+              type="number"
+              value={formData.maxDeposit}
+              onChange={handleChange}
+            />
+          </FormRow>
 
           <FormControl fullWidth>
             <InputLabel id="max-distance-label">최대 추천 거리</InputLabel>

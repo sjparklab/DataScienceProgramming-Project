@@ -60,7 +60,7 @@ const getComputedGeoJson = (geojsonData, weights, statuses) => {
       parseValue(feature.properties['평균 전세 단위면적당 보증금']);
     feature.properties.priceSum = priceSum;
   });
-    
+
   geojsonData.features.forEach(feature => {
     const priceSum = (parseValue(feature.properties['평균 단위면적당 월세금']) * 12 / 0.06) +
       parseValue(feature.properties['평균 월세 단위면적당 보증금']) +
@@ -201,7 +201,13 @@ app.post('/api/recommend', (req, res) => {
     commercialScale,
     transportation,
     singleHousehold,
-    rentPrice,
+    rentType,
+    houseType,
+    area,
+    minPrice,
+    maxPrice,
+    minDeposit,
+    maxDeposit,
     maxDistance,
   } = req.body;
 
@@ -252,11 +258,28 @@ app.post('/api/recommend', (req, res) => {
     });
 
     // 사용자로부터 받은 가중치와 상태 값 설정
-    const weights = [commercialScale, transportation, singleHousehold, rentPrice];
-    const statuses = [true, true, true, true];
+    const weights = [commercialScale, transportation, singleHousehold, 1]; // rentPrice 대신 1로 설정
+    const statuses = [true, true, true, false]; // rentPrice 대신 false로 설정
+
+    // 가격 범위 필터링
+    const filteredFeatures = nearbyFeatures.filter(feature => {
+      const monthlyRentKey = `${houseType} 단위면적당 월세금`;
+      const monthlyDepositKey = `${houseType} 월세 단위면적당 보증금`;
+      const jeonseDepositKey = `${houseType} 전세 단위면적당 보증금`;
+
+      if (rentType === '월세') {
+        const monthlyRent = parseValue(feature.properties[monthlyRentKey]) * area;
+        const deposit = parseValue(feature.properties[monthlyDepositKey]) * area;
+        return monthlyRent >= minPrice && monthlyRent <= maxPrice && deposit >= minDeposit && deposit <= maxDeposit;
+      } else if (rentType === '전세') {
+        const deposit = parseValue(feature.properties[jeonseDepositKey]) * area;
+        return deposit >= minDeposit && deposit <= maxDeposit;
+      }
+      return false;
+    });
 
     // 가중치를 이용해 computedValue 계산
-    const computedGeoJson = getComputedGeoJson({ features: nearbyFeatures }, weights, statuses);
+    const computedGeoJson = getComputedGeoJson({ features: filteredFeatures }, weights, statuses);
     res.json(computedGeoJson.features);
   });
 });
