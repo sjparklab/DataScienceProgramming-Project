@@ -117,19 +117,21 @@ function MapPage() {
         tooltip.style.display = 'block';
         tooltip.style.left = `${info.x}px`;
         tooltip.style.top = `${info.y}px`;
+    
+        const getPropertyOrNA = (prop) => prop !== undefined && prop !== null ? prop.toFixed(2) : 'N/A';
+    
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
-          <div>면적 당 1인가구수: ${properties['면적 당 1인가구수'].toFixed(2)}</div>
-          <div>면적 당 대중교통 수: ${properties['면적 당 대중교통 수'].toFixed(2)}</div>
-          <div>면적 당 전체 상점 수: ${properties['면적 당 전체 상점 수'].toFixed(2)}</div>
+          <div>면적 당 1인가구수: ${getPropertyOrNA(properties['면적 당 1인가구수'])}</div>
+          <div>면적 당 대중교통 수: ${getPropertyOrNA(properties['면적 당 대중교통 수'])}</div>
+          <div>면적 당 전체 상점 수: ${getPropertyOrNA(properties['면적 당 전체 상점 수'])}</div>
           <div>평균 전월세 가격지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
-          <div>점수: ${properties['computedValue'].toFixed(2)}</div>
+          <div>점수: ${getPropertyOrNA(properties['computedValue'])}</div>
         `;
       } else {
         tooltip.style.display = 'none';
       }
     }
-  });
 
   return (
     <div className="container">
