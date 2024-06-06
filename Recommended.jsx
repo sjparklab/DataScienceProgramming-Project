@@ -63,7 +63,7 @@ const keyLabels = {
   count_bus: "버스정류장 갯수",
   count_도시철도: "도시철도 역 갯수",
   count_transport: "전체 대중교통 수",
-  priceSum: '단위면적당 전월세가격 변환 합(만원)',
+  priceSum: '단위면적당 전월세가격 변환 합 (만원)',
   transportation: '교통규모',
   singleHousehold: '1인가구 거주규모',
   distance: '원 지점과의 거리',
