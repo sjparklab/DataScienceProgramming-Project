@@ -274,11 +274,11 @@ app.post('/api/recommend', (req, res) => {
       const jeonseDepositKey = `${houseType} 전세 단위면적당 보증금`;
 
       if (rentType === '월세') {
-        const monthlyRent = parseValue(feature.properties[monthlyRentKey]) / area;
-        const deposit = parseValue(feature.properties[monthlyDepositKey]) / area;
+        const monthlyRent = parseValue(feature.properties[monthlyRentKey]) * area;
+        const deposit = parseValue(feature.properties[monthlyDepositKey]) * area;
         return monthlyRent >= minPrice && monthlyRent <= maxPrice && deposit >= minDeposit && deposit <= maxDeposit;
       } else if (rentType === '전세') {
-        const deposit = parseValue(feature.properties[jeonseDepositKey]) / area;
+        const deposit = parseValue(feature.properties[jeonseDepositKey]) * area;
         return deposit >= minDeposit && deposit <= maxDeposit;
       }
       return false;
