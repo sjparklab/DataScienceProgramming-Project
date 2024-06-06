@@ -132,6 +132,8 @@ function MapPage() {
         tooltip.style.display = 'none';
       }
     }
+    
+  });
 
   return (
     <div className="container">
