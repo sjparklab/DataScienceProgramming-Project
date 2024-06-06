@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: #000;
+}
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  line-height: 1.6;
+  color: #CCCCCC;
+}
+
+nav {
+  margin-right: 20px;
+}
+
+nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+nav ul li {
+  margin-left: 30px;
+}
+
+nav ul li a {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+nav ul li a:hover {
+  text-decoration: underline;
+}
+
+.container-analysis {
+  width: 100%;
+  margin: auto;
+  overflow: hidden;
+  padding-top: 100px;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  background: #000000;
+  color: #fff;
+}
+
+.graph-section {
+  background: #000000;
+  padding: 40px;
+  margin: 20px 0;
+}
+
+.graph-section h3 {
+  color: #FFFFFF;
+}
+
+.graph {
+  width: 100%;
+  height: 1200px;
+  background: #FFFFFF;
+  color: #e5e5e5;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.graph-section.hitmap .graph {
+  height: 800px;
+}
+
+.graph img {
+  width: 48%;
+  margin: 1%;
+  border-radius: 10px;
+}
+
+.graph-scroll {
+  width: 100%;
+  height: 1200px;
+  overflow-y: scroll;
+}
+
+.graph-scroll .graph-item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.graph-scroll .graph-item img {
+  width: 48%;
+  margin: 1%;
+  border-radius: 10px;
+}
+
+.text-section {
+  width: 100%;
+  background: #FFFFFF;
+  color: #000000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  box-sizing: border-box;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.text-section.analysis {
+  height: 200px;
+}
+
+.text-section.one-person-household {
+  height: 150px;
+}
+
+.text-section.district-analysis {
+  height: 180px;
+}
+
+.text-section.hitmap {
+  height: 150px;
+}

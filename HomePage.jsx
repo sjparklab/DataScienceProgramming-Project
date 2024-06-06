@@ -29,7 +29,7 @@ const App = () => {
   return (
     <div>
       <div className="fullscreen-video-wrap">
-        <video src="video.mp4" autoPlay muted loop></video>
+        <video src="video.mp4" autoPlay muted loop typeof=''></video>
       </div>
 
       <div className="fullscreen-message" id="fullscreen-message">
