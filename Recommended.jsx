@@ -389,7 +389,7 @@ function App() {
             <TextField
               fullWidth
               name="minDeposit"
-              label="최소 보증금 (만원)"
+              label="최소보증금 (만원)"
               type="number"
               value={formData.minDeposit}
               onChange={handleChange}
@@ -397,7 +397,7 @@ function App() {
             <TextField
               fullWidth
               name="maxDeposit"
-              label="최대 보증금(만원)"
+              label="최대보증금(만원)"
               type="number"
               value={formData.maxDeposit}
               onChange={handleChange}
