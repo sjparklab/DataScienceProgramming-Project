@@ -67,9 +67,10 @@ const App = () => {
           </div>
           <div className="box text-content recommendation">
             <h2><span className="highlight">사용자 맞춤 </span><span className="highlight-white">주거 지역 추천</span></h2>
-            <p>사용자가 자신의 학교나 회사가 위치한 읍면동을 선택하고,<br />
-              대중교통 접근성, 주택 평당 가격, 상권 데이터의 중요도를 선택하면,
-              <br />해당 정보를 바탕으로 최적의 주거 지역을 추천합니다.</p>
+            <p>사용자가 자신의 학교나 회사가 위치한 읍면동을 선택하고, <br />
+              대중교통 접근성, 상권 데이터의 중요도, 원하는 주택 평 당 가격의 범위를 입력하면, <br />
+              해당 정보를 바탕으로 최적의 주거 지역을 추천합니다.
+            </p>
           </div>
         </div>
       </div>

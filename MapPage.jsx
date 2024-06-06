@@ -124,8 +124,8 @@ function MapPage() {
           <div><strong>${properties['행정구역_x']}</strong></div>
           <div>면적 당 1인가구수: ${getPropertyOrNA(properties['면적 당 1인가구수'])}</div>
           <div>면적 당 대중교통 수: ${getPropertyOrNA(properties['면적 당 대중교통 수'])}</div>
-          <div>면적 당 전체 상점 수: ${getPropertyOrNA(properties['면적 당 전체 상점 수'])}</div>
-          <div>평균 전월세 가격지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
+          <div>면적 당 상업시설 수: ${getPropertyOrNA(properties['면적 당 전체 상점 수'])}</div>
+          <div>단위면적당 전월세 가격 지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
           <div>점수: ${getPropertyOrNA(properties['computedValue'])}</div>
         `;
       } else {
@@ -199,7 +199,7 @@ function MapPage() {
               </div>
             </div>
             <div className="control-box">
-              <Typography className="sidebar-title">데이터 파일 선택</Typography>
+              <Typography className="sidebar-title">행정 구역 단위 선택</Typography>
               <div className="toggle-button-group">
                 <Button
                   variant={selectedData === 'sigungu' ? "contained" : "outlined"}
@@ -219,7 +219,7 @@ function MapPage() {
                 </Button>
               </div>
             </div>
-            {['총세대수', '운송수단수', '상점수', '평균 전월세 가격지수'].map((prop, index) => (
+            {['1인 가구 수', '대중교통 수', '상업시설 수', '단위면적당 전월세 가격 지수(소형주택)'].map((prop, index) => (
               <div className="control-box" key={index}>
                 <Typography className="sidebar-label">{prop}</Typography>
                 <div className="toggle-button-group">

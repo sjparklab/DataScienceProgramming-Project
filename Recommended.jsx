@@ -44,11 +44,11 @@ const ResultContainer = styled('div')({
 
 const keyLabels = {
   행정구역_x: "행정구역(행정동)명",
-  '2023년_계_총세대수': "지역 내 1인가구수",
+  '2023년_계_총세대수': "지역 내 1인가구 수",
   '2023년_계_총인구수': "지역 내 총 인구수",
   '2023년_세대수(전체세대)': "지역 내 총 세대수",
-  '지역별 1인세대 / 지역별 전체세대': "지역별 1인세대 / 지역별 전체세대 비율",
-  '지역별 1인가구 / 전체인구비': '지역별 1인가구 / 전체인구 비율',
+  '지역별 1인세대 / 지역별 전체세대': "지역별 1인세대 / 지역별 전체세대 비율 (%)",
+  '지역별 1인가구 / 전체인구비': '지역별 1인가구 / 전체인구 비율 (%)',
   "sum_과학·기술": "과학기술 상가 갯수",
   "sum_교육": "교육 상가 갯수",
   "sum_보건의료": "보건의료 상가 갯수",
@@ -59,11 +59,11 @@ const keyLabels = {
   "sum_시설관리·임대": "시설관리·임대 상가 갯수",
   "sum_예술·스포츠": "예술 상가 갯수",
   "sum_음식": "음식 상가 갯수",
-  "sum_all_shop": "전체 상가 갯수",
+  "sum_all_shop": "전체 상업시설 수",
   count_bus: "버스정류장 갯수",
   count_도시철도: "도시철도 역 갯수",
   count_transport: "전체 대중교통 수",
-  priceSum: '면적당 전월세가격 변환 합',
+  priceSum: '단위면적당 전월세가격 변환 합(만원)',
   transportation: '교통규모',
   singleHousehold: '1인가구 거주규모',
   distance: '원 지점과의 거리',
@@ -82,12 +82,12 @@ const PropertyDisplay = ({ properties }) => {
       <Typography>{`${keyLabels['2023년_계_총세대수'] || '2023년_계_총세대수'}: ${formatNumber(properties['2023년_계_총세대수'])}`}</Typography>
       <Typography>{`${keyLabels["sum_all_shop"] || "sum_all_shop"}: ${formatNumber(properties["sum_all_shop"])}`}</Typography>
       <Typography>{`${keyLabels["count_transport"] || "count_transport"}: ${formatNumber(properties["count_transport"])}`}</Typography>
-      <Typography>{`${keyLabels['면적 당 1인가구수'] || '면적 당 1인가구수'}: ${formatNumber(properties['면적 당 1인가구수'])}`}</Typography>
-      <Typography>{`${keyLabels["면적 당 전체 상점 수"] || "면적 당 전체 상점 수"}: ${formatNumber(properties["면적 당 전체 상점 수"])}`}</Typography>
+      <Typography>{`${keyLabels['면적 당 1인가구 수'] || '면적 당 1인가구 수'}: ${formatNumber(properties['면적 당 1인가구수'])}`}</Typography>
+      <Typography>{`${keyLabels["면적 당 전체 상업시설 수"] || "면적 당 전체 상업시설 수"}: ${formatNumber(properties["면적 당 전체 상점 수"])}`}</Typography>
       <Typography>{`${keyLabels["면적 당 대중교통 수"] || "면적 당 대중교통 수"}: ${formatNumber(properties["면적 당 대중교통 수"])}`}</Typography>
       <Typography>{`평균 단위면적당 월세: ${formatNumber(properties["평균 단위면적당 월세금"])}`}</Typography>
-      <Typography>{`평균 월세 단위면적당 보증금: ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
-      <Typography>{`평균 전세 단위면적당 보증금: ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
+      <Typography>{`단위면적당 월세 보증금 평균 (만원): ${formatNumber(properties["평균 월세 단위면적당 보증금"])}`}</Typography>
+      <Typography>{`단위면적당 전세 보증금 평균 (만원): ${formatNumber(properties["평균 전세 단위면적당 보증금"])}`}</Typography>
       <Typography>{`${keyLabels["priceSum"] || "priceSum"}: ${formatNumber(properties["priceSum"])}`}</Typography>
       <Typography>{`원 지점과의 거리: ${formatNumber(properties["distance"])}`}</Typography>
       <Typography>{`최종 점수: ${formatNumber(properties["computedValue"])}`}</Typography>
@@ -106,7 +106,7 @@ const PropertyDisplay = ({ properties }) => {
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>추가 상가 정보</Typography>
+          <Typography>추가 상업시설 정보</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>{`${keyLabels["sum_과학·기술"] || "sum_과학·기술"}: ${formatNumber(properties["sum_과학·기술"])}`}</Typography>
@@ -124,7 +124,7 @@ const PropertyDisplay = ({ properties }) => {
 
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>추가 교통수단 정보</Typography>
+          <Typography>추가 대중교통 정보</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography>{`${keyLabels["count_bus"] || "count_bus"}: ${formatNumber(properties["count_bus"])}`}</Typography>
@@ -137,18 +137,18 @@ const PropertyDisplay = ({ properties }) => {
           <Typography>추가 부동산 정보</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography>{`단독다가구 월세 단위면적당 보증금: ${formatNumber(properties["단독다가구 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`단독다가구 단위면적당 월세: ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`단독다가구 전세 단위면적당 보증금: ${formatNumber(properties["단독다가구 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`아파트 월세 단위면적당 보증금: ${formatNumber(properties["아파트 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`아파트 단위면적당 월세: ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`아파트 전세 단위면적당 보증금: ${formatNumber(properties["아파트 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`연립다세대 월세 단위면적당 보증금: ${formatNumber(properties["연립다세대 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`연립다세대 단위면적당 월세: ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`연립다세대 전세 단위면적당 보증금: ${formatNumber(properties["연립다세대 전세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`오피스텔 월세 단위면적당 보증금: ${formatNumber(properties["오피스텔 월세 단위면적당 보증금"])}`}</Typography>
-          <Typography>{`오피스텔 단위면적당 월세: ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
-          <Typography>{`오피스텔 전세 단위면적당 보증금: ${formatNumber(properties["오피스텔 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 월세 보증금: ${formatNumber(properties["단독다가구 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 월세: ${formatNumber(properties["단독다가구 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 단독다가구 전세 보증금: ${formatNumber(properties["단독다가구 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 월세 보증금: ${formatNumber(properties["아파트 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 월세: ${formatNumber(properties["아파트 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 아파트 전세 보증금: ${formatNumber(properties["아파트 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 월세 보증금: ${formatNumber(properties["연립다세대 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 월세: ${formatNumber(properties["연립다세대 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 연립다세대 전세 보증금: ${formatNumber(properties["연립다세대 전세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 월세 보증금: ${formatNumber(properties["오피스텔 월세 단위면적당 보증금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 월세: ${formatNumber(properties["오피스텔 단위면적당 월세금"])}`}</Typography>
+          <Typography>{`단위면적당 오피스텔 전세 보증금: ${formatNumber(properties["오피스텔 전세 단위면적당 보증금"])}`}</Typography>
         </AccordionDetails>
       </Accordion>
 
@@ -280,7 +280,7 @@ function App() {
           </FormRow>
 
           <Box>
-            <Typography gutterBottom>상권 접근성</Typography>
+            <Typography gutterBottom>상업 시설 접근성</Typography>
             <Slider
               value={formData.commercialScale}
               onChange={handleSliderChange('commercialScale')}
@@ -308,7 +308,7 @@ function App() {
           </Box>
 
           <Box>
-            <Typography gutterBottom>1인가구수</Typography>
+            <Typography gutterBottom>1인가구 수</Typography>
             <Slider
               value={formData.singleHousehold}
               onChange={handleSliderChange('singleHousehold')}
