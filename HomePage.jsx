@@ -41,7 +41,7 @@ const App = () => {
       <div className="container-home">
         <div className="section" id="home">
           <div className="box">
-            <img src="홈 삽입 사진/graph.jpg" alt="1인 가구 증가" className="inverted-image" />
+            <img src="홈 삽입 사진/graph.png" alt="1인 가구 증가" className="inverted-image" />
           </div>
           <div className="box text-content data-visualization">
             <h2><span className="highlight">그래프 기반 </span><span className="highlight-white">데이터 분석</span><span className="highlight">으로<br />1인 가구 관련 데이터 쉽게 이해</span></h2>
