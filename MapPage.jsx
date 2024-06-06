@@ -119,9 +119,9 @@ function MapPage() {
         tooltip.style.top = `${info.y}px`;
         tooltip.innerHTML = `
           <div><strong>${properties['행정구역_x']}</strong></div>
-          <div>총세대수: ${properties['2023년_계_총세대수']}</div>
-          <div>운송수단수: ${properties['count_transport']}</div>
-          <div>상점수: ${properties['sum_all_shop']}</div>
+          <div>면적 당 1인가구수: ${properties['면적 당 1인가구수'].toFixed(2)}</div>
+          <div>면적 당 대중교통 수: ${properties['면적 당 대중교통 수'].toFixed(2)}</div>
+          <div>면적 당 전체 상점 수: ${properties['면적 당 전체 상점 수'].toFixed(2)}</div>
           <div>평균 전월세 가격지수: ${properties.reversepriceSumNormalized !== undefined ? (properties.reversepriceSumNormalized * 100).toFixed(2) : 'N/A'}</div>
           <div>Computed Value: ${properties['computedValue'].toFixed(2)}</div>
         `;
