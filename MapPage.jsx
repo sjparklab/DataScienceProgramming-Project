@@ -17,7 +17,7 @@ const UPDATE_GEOJSON_URL = import.meta.env.VITE_UPDATE_GEOJSON_URL;
 
 const INITIAL_VIEW_STATE = {
   latitude: 35.9078,
-  longitude: 127.7669,
+  longitude: 126.7669,
   zoom: 7,
   bearing: 0,
   pitch: 30
